@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-inter: 'Inter', sans-serif;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-silkscreen: 'Silkscreen', monospace;
+}
+
+body {
+  font-family: var(--font-inter);
+  overflow-x: hidden;
+  background-attachment: fixed;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html.dark body {
+  background-color: #080c14;
+  color: #f3f4f6;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 100% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 0% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+}
+
+html.light body {
+  background-color: #f3f6fb;
+  color: #0f172a;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 100% 40%, rgba(245, 158, 11, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 0% 70%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
+}
+
+/* Pixel Border and Box Utilities */
+.pixel-box {
+  box-shadow: 
+    -4px 0 0 0 #000,
+    4px 0 0 0 #000,
+    0 -4px 0 0 #000,
+    0 4px 0 0 #000;
+}
+
+.pixel-box-sm {
+  box-shadow: 
+    -2px 0 0 0 #000,
+    2px 0 0 0 #000,
+    0 -2px 0 0 #000,
+    0 2px 0 0 #000;
+}
+
+.pixel-bevel {
+  border: 3px solid #000;
+  border-top-color: rgba(255, 255, 255, 0.25);
+  border-left-color: rgba(255, 255, 255, 0.25);
+  border-bottom-color: rgba(0, 0, 0, 0.6);
+  border-right-color: rgba(0, 0, 0, 0.6);
+}
+
+.pixel-bevel-gold {
+  border: 3px solid #92400e;
+  border-top-color: #fef08a;
+  border-left-color: #fef08a;
+  border-bottom-color: #78350f;
+  border-right-color: #78350f;
+}
+
+.pixel-bevel-blue {
+  border: 3px solid #1e3a8a;
+  border-top-color: #93c5fd;
+  border-left-color: #93c5fd;
+  border-bottom-color: #172554;
+  border-right-color: #172554;
+}
+
+/* Dirt and Grass Platform Pattern */
+.gt-grass-platform {
+  background: linear-gradient(180deg, #59a82d 0%, #448323 20%, #875228 21%, #673e1c 100%);
+  border-top: 4px solid #78df3c;
+  box-shadow: 0 -4px 0 0 #284c14 inset, 0 4px 10px rgba(0,0,0,0.5);
+}
+
+/* Scanlines overlay subtle texture */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #24324f;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Pixelated rendering for sprites */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
