@@ -10,9 +10,18 @@
   --font-silkscreen: 'Silkscreen', monospace;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
 body {
   font-family: var(--font-inter);
   overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  position: relative;
   background-attachment: fixed;
   transition: background-color 0.25s ease, color 0.25s ease;
 }

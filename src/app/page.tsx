@@ -39,7 +39,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-gray-100 flex flex-col selection:bg-amber-500 selection:text-black transition-colors">
+    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-gray-100 flex flex-col selection:bg-amber-500 selection:text-black transition-colors">
       
       {/* Background Animated Pixel Clouds */}
       <FloatingClouds />

@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth" suppressHydrationWarning>
-      <body className="min-h-screen transition-colors antialiased selection:bg-amber-500 selection:text-black">
+    <html lang="en" className="dark scroll-smooth overflow-x-hidden w-full" suppressHydrationWarning>
+      <body className="min-h-screen w-full overflow-x-hidden transition-colors antialiased selection:bg-amber-500 selection:text-black">
         <ThemeProvider>
           <LanguageProvider>
             {children}

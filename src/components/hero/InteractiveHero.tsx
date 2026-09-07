@@ -81,30 +81,30 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
         <div className="lg:col-span-7 text-center lg:text-left z-10">
           
           {/* Top Pill / Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 dark:bg-gradient-to-r dark:from-amber-500/15 dark:via-yellow-500/10 dark:to-transparent border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-semibold mb-6 shadow-sm">
-            <span className="flex h-2 w-2 relative">
+          <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 dark:bg-gradient-to-r dark:from-amber-500/15 dark:via-yellow-500/10 dark:to-transparent border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-semibold mb-6 shadow-sm max-w-full">
+            <span className="flex h-2 w-2 relative shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
             </span>
-            <span className="font-pixel text-[10px] tracking-wide">{t.hero.badgeCatalog}</span>
-            <span className="text-gray-400">•</span>
-            <span>{t.hero.badgeMm}</span>
+            <span className="font-pixel text-[9px] sm:text-[10px] tracking-wide">{t.hero.badgeCatalog}</span>
+            <span className="text-gray-400 hidden xs:inline">•</span>
+            <span className="text-[11px] sm:text-xs">{t.hero.badgeMm}</span>
           </div>
 
           {/* Main Title: WICSTORE GROWTOPIA */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-4">
+          <h1 className="text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] mb-4 break-words">
             {t.hero.mainTitleLine1} <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 dark:from-amber-400 dark:via-yellow-300 dark:to-amber-500 bg-clip-text text-transparent drop-shadow-[0_4px_15px_rgba(245,158,11,0.25)]">
               {t.hero.mainTitleHighlight}
             </span>
             <br />
-            <span className="text-xl sm:text-3xl font-pixelHeading text-blue-600 dark:text-blue-400">
+            <span className="text-lg xs:text-xl sm:text-3xl font-pixelHeading text-blue-600 dark:text-blue-400">
               {t.hero.mainTitleLine2}
             </span>
           </h1>
 
           {/* Subtitle - Exact user requirement 6 text */}
-          <p className="text-sm sm:text-base text-slate-700 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-700 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 mb-8 leading-relaxed">
             {language === 'id' ? (
               <>
                 Menyediakan akun <strong className="text-amber-600 dark:text-amber-300 font-bold">Log Legacy terbaik</strong>. Transaksi aman via <strong className="text-slate-900 dark:text-white font-semibold">QRIS, Semua Bank, &amp; Rekber Resmi (GTMART &amp; GTID)</strong>.
@@ -117,18 +117,18 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           </p>
 
           {/* CTA Buttons - WhatsApp replaced by Discord CTA */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-8">
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-4 mb-8">
             
             <button
               onClick={() => {
                 sounds.playCoinSound();
                 onExploreCatalog();
               }}
-              className="group relative px-6 py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold rounded-xl shadow-pixel-amber transition-all active:translate-y-1 flex items-center gap-2 text-sm sm:text-base font-pixelHeading"
+              className="group relative px-5 sm:px-6 py-3 sm:py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold rounded-xl shadow-pixel-amber transition-all active:translate-y-1 flex items-center gap-2 text-xs sm:text-base font-pixelHeading"
             >
-              <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: '4s' }} />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" style={{ animationDuration: '4s' }} />
               <span>{t.hero.btnExplore}</span>
-              <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+              <ArrowDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-y-0.5 transition-transform" />
             </button>
 
             {/* Discord CTA */}
@@ -137,9 +137,9 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => sounds.playCoinSound()}
-              className="px-5 py-3.5 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold rounded-xl shadow-pixel-blue transition-all active:translate-y-1 flex items-center gap-2 text-sm"
+              className="px-4 sm:px-5 py-3 sm:py-3.5 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold rounded-xl shadow-pixel-blue transition-all active:translate-y-1 flex items-center gap-2 text-xs sm:text-sm"
             >
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 127.14 96.36">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current shrink-0" viewBox="0 0 127.14 96.36">
                 <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.91,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.91,96.12,53,91.08,65.69,84.69,65.69Z" />
               </svg>
               <span>{t.hero.btnDiscord}</span>
@@ -151,27 +151,27 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
                 sounds.playClickSound();
                 onOpenRekberGuide();
               }}
-              className="px-4 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-800 dark:text-gray-200 hover:text-black dark:hover:text-white font-semibold rounded-xl border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 shadow-pixel transition-all active:translate-y-1 flex items-center gap-2 text-sm"
+              className="px-3.5 sm:px-4 py-3 sm:py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-800 dark:text-gray-200 hover:text-black dark:hover:text-white font-semibold rounded-xl border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 shadow-pixel transition-all active:translate-y-1 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
             >
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{t.hero.btnRekber}</span>
             </button>
 
           </div>
 
           {/* Mini Highlights */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-lg mx-auto lg:mx-0 pt-4 border-t border-slate-200 dark:border-slate-800/80 text-center lg:text-left">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-4 max-w-lg mx-auto lg:mx-0 pt-4 border-t border-slate-200 dark:border-slate-800/80 text-center lg:text-left">
             <div>
-              <div className="font-pixelHeading text-lg sm:text-xl font-bold text-amber-500 dark:text-amber-400">{t.hero.stat1Value}</div>
-              <div className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-400">{t.hero.stat1Label}</div>
+              <div className="font-pixelHeading text-sm sm:text-xl font-bold text-amber-500 dark:text-amber-400">{t.hero.stat1Value}</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">{t.hero.stat1Label}</div>
             </div>
             <div>
-              <div className="font-pixelHeading text-lg sm:text-xl font-bold text-cyan-600 dark:text-cyan-400">{t.hero.stat2Value}</div>
-              <div className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-400">{t.hero.stat2Label}</div>
+              <div className="font-pixelHeading text-xs sm:text-xl font-bold text-cyan-600 dark:text-cyan-400 truncate">{t.hero.stat2Value}</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">{t.hero.stat2Label}</div>
             </div>
             <div>
-              <div className="font-pixelHeading text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400">{t.hero.stat3Value}</div>
-              <div className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-400">{t.hero.stat3Label}</div>
+              <div className="font-pixelHeading text-sm sm:text-xl font-bold text-emerald-600 dark:text-emerald-400">{t.hero.stat3Value}</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">{t.hero.stat3Label}</div>
             </div>
           </div>
 
@@ -183,12 +183,12 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
           {/* Interactive Speech Bubble */}
           <div 
             onClick={handleCharacterClick}
-            className="cursor-pointer mb-3 px-4 py-2.5 bg-white/95 dark:bg-slate-900/90 border-2 border-amber-500/80 dark:border-amber-400/80 rounded-2xl shadow-pixel text-center relative z-20 max-w-xs transition-transform hover:scale-105 active:scale-95"
+            className="cursor-pointer mb-3 px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white/95 dark:bg-slate-900/90 border-2 border-amber-500/80 dark:border-amber-400/80 rounded-2xl shadow-pixel text-center relative z-20 max-w-[280px] sm:max-w-xs transition-transform hover:scale-105 active:scale-95"
             style={{
               transform: `translate3d(${mouseOffset.x * 0.4}px, ${mouseOffset.y * 0.4}px, 0)`,
             }}
           >
-            <p className="text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-300 flex items-center justify-center gap-1.5">
+            <p className="text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-300 flex items-center justify-center gap-1.5 break-words">
               <span>{t.hero.dialogues[dialogueIndex % t.hero.dialogues.length]}</span>
             </p>
             {/* Bubble Tail */}
@@ -308,7 +308,7 @@ export const InteractiveHero: React.FC<InteractiveHeroProps> = ({
             </div>
 
             {/* Dirt & Grass Floating Platform */}
-            <div className="w-56 sm:w-72 mt-[-10px] z-10">
+            <div className="w-52 xs:w-56 sm:w-72 mt-[-10px] z-10 max-w-full">
               {/* Grass Top Layer with pixel fringe */}
               <div className="h-5 bg-gt-grass rounded-t-md border-t-2 border-gt-grassLight flex items-center justify-around px-2">
                 <div className="w-2 h-1 bg-green-300"></div>
