@@ -41,8 +41,70 @@ export function generateWhatsAppOrderUrl(
   return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(rawMessage)}`;
 }
 
-export function generateDiscordProfileUrl(discordId: string): string {
-  return `https://discord.com/users/${discordId || '1199509687918399588'}`;
+export function generateDiscordProfileUrl(settingsOrId?: StoreSettings | string): string {
+  if (typeof settingsOrId === 'string') {
+    if (settingsOrId.startsWith('http')) return settingsOrId;
+    return `https://discord.com/users/${settingsOrId}`;
+  }
+  if (settingsOrId?.discordServerUrl && settingsOrId.discordServerUrl.trim() !== '') {
+    return settingsOrId.discordServerUrl;
+  }
+  return `https://discord.gg/eUXdAKsvBY`;
+}
+
+export function getDiscordDeepLink(discordId: string) {
+  const id = discordId || '1199509687918399588';
+  return {
+    appUrl: `discord://-/users/${id}`,
+    intentUrl: `intent://-/users/${id}#Intent;scheme=discord;package=com.discord;S.browser_fallback_url=https%3A%2F%2Fdiscord.com%2Fusers%2F${id};end`,
+    webUrl: `https://discord.com/users/${id}`,
+  };
+}
+
+export function openDiscord(settingsOrId?: StoreSettings | string) {
+  if (typeof window === 'undefined') return;
+
+  let targetUrl = 'https://discord.gg/eUXdAKsvBY';
+  let discordId = '1199509687918399588';
+
+  if (typeof settingsOrId === 'string') {
+    if (settingsOrId.startsWith('http')) {
+      targetUrl = settingsOrId;
+    } else {
+      discordId = settingsOrId;
+      targetUrl = `https://discord.com/users/${settingsOrId}`;
+    }
+  } else if (settingsOrId) {
+    discordId = settingsOrId.discordId || discordId;
+    targetUrl = settingsOrId.discordServerUrl || 'https://discord.gg/eUXdAKsvBY';
+  }
+
+  // Official Discord Server Invite (Universal Link for 100% native opening on iOS & Android)
+  if (targetUrl.includes('discord.gg') || targetUrl.includes('/invite/')) {
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  // Fallback for user profile Snowflake ID
+  const ua = navigator.userAgent || '';
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
+
+  const links = getDiscordDeepLink(discordId);
+
+  if (isAndroid) {
+    window.location.href = links.intentUrl;
+  } else if (isIOS) {
+    window.location.href = links.appUrl;
+    const start = Date.now();
+    setTimeout(() => {
+      if (Date.now() - start < 2200 && !document.hidden) {
+        window.location.href = links.webUrl;
+      }
+    }, 1500);
+  } else {
+    window.open(links.webUrl, '_blank', 'noopener,noreferrer');
+  }
 }
 
 export function generateDiscordOrderMessage(
@@ -88,7 +150,8 @@ export function generatePostTemplate(
 🔑 Login: [LOG LEGACY] (${account.emailStatus})
 💰 Harga: ${priceRpStr} / ${lockInfo.text}
 🛡️ Menerima Direct / MM GTID & GTMART Discord
-🎮 Discord: https://discord.com/users/${settings.discordId} (ID: ${settings.discordId})`;
+🎮 Server Discord: ${settings.discordServerUrl || 'https://discord.gg/eUXdAKsvBY'}
+🆔 Admin Discord : ${settings.discordUsername || 'wicstore'} (ID: ${settings.discordId})`;
   }
 
   const itemsList = account.questItems.map(item => `  • ${item}`).join('\n');
@@ -138,7 +201,7 @@ ${untradeableList || '  • No Minus'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📞 HUBUNGI ADMIN WICSTORE:
-🎮 Discord Profile: https://discord.com/users/${settings.discordId}
-🆔 Discord ID: ${settings.discordId} (${settings.discordUsername})
-🌐 Official Catalog: wicstore`;
+🎮 Server Discord : ${settings.discordServerUrl || 'https://discord.gg/eUXdAKsvBY'}
+🆔 Admin Discord  : @${settings.discordUsername || 'wicstore'} (ID: ${settings.discordId})
+🌐 Official Catalog: WicStore Growtopia`;
 }

@@ -6,6 +6,7 @@ import { StoreSettings } from '../../types/account';
 import { ShieldCheck, ExternalLink, Lock } from 'lucide-react';
 import { sounds } from '../../utils/soundEffects';
 import { useLanguage } from '../../context/LanguageContext';
+import { openDiscord, generateDiscordProfileUrl } from '../../utils/formatters';
 
 interface FooterProps {
   settings: StoreSettings;
@@ -89,10 +90,14 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenRekberGuide }) =
             <ul className="space-y-2.5 text-xs">
               <li>
                 <a
-                  href={`https://discord.com/users/${settings.discordId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1.5 font-medium"
+                  href={generateDiscordProfileUrl(settings)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    sounds.playCoinSound();
+                    openDiscord(settings);
+                  }}
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline transition-colors flex items-center gap-1.5 font-medium cursor-pointer"
+                  title={`Server Discord: ${settings.storeName}`}
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>{t.footer.contactDiscordProfile} (@{settings.discordUsername})</span>

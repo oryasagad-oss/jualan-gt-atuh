@@ -6,6 +6,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   whatsappNumber: "6285812345678",
   discordId: "1199509687918399588",
   discordUsername: "wicstore#GT",
+  discordServerUrl: "https://discord.gg/eUXdAKsvBY",
   gtmartDiscordUrl: "https://discord.gg/gtmart",
   gtidDiscordUrl: "https://discord.gg/gtid",
   dlRateIdr: 3500, // 1 DL = Rp 3.500

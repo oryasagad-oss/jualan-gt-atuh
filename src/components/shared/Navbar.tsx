@@ -7,6 +7,7 @@ import { sounds } from '../../utils/soundEffects';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import { ShieldCheck, Volume2, VolumeX, Lock, Sun, Moon, Globe } from 'lucide-react';
+import { openDiscord, generateDiscordProfileUrl } from '../../utils/formatters';
 
 interface NavbarProps {
   settings: StoreSettings;
@@ -154,12 +155,14 @@ export const Navbar: React.FC<NavbarProps> = ({ settings }) => {
 
           {/* Primary CTA: Discord */}
           <a
-            href={`https://discord.com/users/${settings.discordId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => sounds.playCoinSound()}
-            className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold text-white bg-[#5865F2] hover:bg-[#4752C4] rounded-lg shadow-pixel-blue transition-all"
-            title="Discord"
+            href={generateDiscordProfileUrl(settings)}
+            onClick={(e) => {
+              e.preventDefault();
+              sounds.playCoinSound();
+              openDiscord(settings);
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold text-white bg-[#5865F2] hover:bg-[#4752C4] rounded-lg shadow-pixel-blue transition-all active:scale-95 cursor-pointer"
+            title={`Server Discord: ${settings.storeName}`}
           >
             {/* Discord Icon SVG */}
             <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 127.14 96.36">

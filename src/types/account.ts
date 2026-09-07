@@ -33,6 +33,7 @@ export interface StoreSettings {
   whatsappNumber: string;
   discordId: string;
   discordUsername: string;
+  discordServerUrl?: string;
   gtmartDiscordUrl: string;
   gtidDiscordUrl: string;
   dlRateIdr: number; // e.g. 3500

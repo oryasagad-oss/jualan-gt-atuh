@@ -97,7 +97,7 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
             </div>
           </div>
 
-          {/* WhatsApp & Discord ID */}
+          {/* WhatsApp & Discord Contact */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold text-gray-300 mb-1">
@@ -126,7 +126,36 @@ export const StoreSettingsModal: React.FC<StoreSettingsModalProps> = ({
                 placeholder="1199509687918399588"
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white font-mono"
               />
-              <span className="text-[10px] text-gray-500">Contoh: 1199509687918399588</span>
+              <span className="text-[10px] text-gray-500">Contoh: 1199509687918399588 (Dipakai untuk deep link profil)</span>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-gray-300 mb-1">
+                Discord Username Admin (@username):
+              </label>
+              <input
+                type="text"
+                required
+                value={form.discordUsername}
+                onChange={(e) => setForm({ ...form, discordUsername: e.target.value })}
+                placeholder="wicstore#GT atau wicstore"
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white font-mono"
+              />
+              <span className="text-[10px] text-gray-500">Username/tag untuk dicopy pembeli jika ingin add friend</span>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-gray-300 mb-1">
+                Link Server Discord Toko (Opsional):
+              </label>
+              <input
+                type="text"
+                value={form.discordServerUrl || ''}
+                onChange={(e) => setForm({ ...form, discordServerUrl: e.target.value })}
+                placeholder="https://discord.gg/namaserver"
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white font-mono"
+              />
+              <span className="text-[10px] text-gray-500">Jika ada server Discord toko sendiri</span>
             </div>
           </div>
 
