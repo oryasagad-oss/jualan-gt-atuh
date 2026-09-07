@@ -7,13 +7,20 @@ const SETTINGS_STORAGE_KEY = 'wicstore_settings_v2';
 export function getStoredAccounts(): Account[] {
   if (typeof window === 'undefined') return SAMPLE_ACCOUNTS;
   try {
-    const raw = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+    let raw = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+    if (!raw) {
+      const legacy = localStorage.getItem('gt_store_accounts_v1');
+      if (legacy) {
+        localStorage.setItem(ACCOUNTS_STORAGE_KEY, legacy);
+        raw = legacy;
+      }
+    }
     if (!raw) {
       localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(SAMPLE_ACCOUNTS));
       return SAMPLE_ACCOUNTS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : SAMPLE_ACCOUNTS;
+    return Array.isArray(parsed) ? parsed : SAMPLE_ACCOUNTS;
   } catch (err) {
     console.error('Failed to parse stored accounts:', err);
     return SAMPLE_ACCOUNTS;
@@ -32,7 +39,14 @@ export function saveStoredAccounts(accounts: Account[]): void {
 export function getStoredSettings(): StoreSettings {
   if (typeof window === 'undefined') return DEFAULT_STORE_SETTINGS;
   try {
-    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    let raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!raw) {
+      const legacy = localStorage.getItem('gt_store_settings_v1');
+      if (legacy) {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, legacy);
+        raw = legacy;
+      }
+    }
     if (!raw) {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(DEFAULT_STORE_SETTINGS));
       return DEFAULT_STORE_SETTINGS;
