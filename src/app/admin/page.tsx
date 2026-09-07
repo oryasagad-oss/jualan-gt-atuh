@@ -8,6 +8,9 @@ import {
   saveStoredAccounts, 
   getStoredSettings, 
   saveStoredSettings, 
+  fetchAccounts,
+  fetchSettings,
+  subscribeToCloudUpdates,
   exportDataToJson, 
   importDataFromJson,
   resetToDefaultData
@@ -35,7 +38,8 @@ import {
   Package, 
   ShieldCheck, 
   Eye,
-  LogOut
+  LogOut,
+  Cloud
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -50,24 +54,45 @@ export default function AdminPage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchTable, setSearchTable] = useState('');
 
-  // Load from local storage on mount
+  // Load from local cache and sync with Supabase Cloud
   useEffect(() => {
-    const loadedAccounts = getStoredAccounts();
-    const loadedSettings = getStoredSettings();
-    setAccounts(loadedAccounts);
-    setSettings(loadedSettings);
+    // 1. Immediate local cache
+    setAccounts(getStoredAccounts());
+    setSettings(getStoredSettings());
     setIsLoading(false);
+
+    // 2. Fetch latest from Supabase
+    fetchAccounts().then((cloudAccs) => {
+      if (cloudAccs) setAccounts(cloudAccs);
+    });
+
+    fetchSettings().then((cloudSettings) => {
+      if (cloudSettings) setSettings(cloudSettings);
+    });
+
+    // 3. Realtime cloud sync
+    const unsubscribe = subscribeToCloudUpdates((key, value) => {
+      if (key === 'accounts' && Array.isArray(value)) {
+        setAccounts(value);
+      } else if (key === 'settings' && value) {
+        setSettings(value);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
-  // Sync back to storage on change
-  const handleSaveAccounts = (newAccounts: Account[]) => {
+  // Sync back to cloud storage on change
+  const handleSaveAccounts = async (newAccounts: Account[]) => {
     setAccounts(newAccounts);
-    saveStoredAccounts(newAccounts);
+    await saveStoredAccounts(newAccounts);
   };
 
-  const handleSaveSettings = (newSettings: StoreSettings) => {
+  const handleSaveSettings = async (newSettings: StoreSettings) => {
     setSettings(newSettings);
-    saveStoredSettings(newSettings);
+    await saveStoredSettings(newSettings);
     setIsSettingsOpen(false);
   };
 
@@ -137,9 +162,9 @@ export default function AdminPage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const content = event.target?.result as string;
-      const res = importDataFromJson(content);
+      const res = await importDataFromJson(content);
       if (res.success) {
         sounds.playSuccessSound();
         setAccounts(getStoredAccounts());
@@ -154,10 +179,10 @@ export default function AdminPage() {
   };
 
   // Reset to default sample accounts
-  const handleResetToDefault = () => {
+  const handleResetToDefault = async () => {
     if (confirm('Apakah Anda yakin ingin me-reset katalog ke data contoh awal Growtopia?')) {
       sounds.playSuccessSound();
-      const res = resetToDefaultData();
+      const res = await resetToDefaultData();
       setAccounts(res.accounts);
       setSettings(res.settings);
     }
@@ -213,16 +238,20 @@ export default function AdminPage() {
             </Link>
 
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-pixelHeading text-sm font-bold text-white">
                   ADMIN DASHBOARD
                 </span>
                 <span className="text-[10px] font-pixel text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30">
                   {settings.storeName}
                 </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/40">
+                  <Cloud className="w-3 h-3 text-emerald-400" />
+                  <span className="hidden xs:inline">Cloud Database</span>
+                </span>
               </div>
               <p className="text-[11px] text-gray-400 hidden sm:block">
-                Kelola inventaris akun Growtopia & pengaturan kontak
+                Kelola inventaris akun Growtopia &amp; pengaturan kontak (Tersinkronisasi Otomatis ke Cloud)
               </p>
             </div>
           </div>

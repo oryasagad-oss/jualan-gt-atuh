@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Account, StoreSettings } from '../types/account';
-import { getStoredAccounts, getStoredSettings } from '../utils/storage';
+import { 
+  getStoredAccounts, 
+  getStoredSettings, 
+  fetchAccounts, 
+  fetchSettings, 
+  subscribeToCloudUpdates 
+} from '../utils/storage';
 import { Navbar } from '../components/shared/Navbar';
 import { FloatingClouds } from '../components/hero/FloatingClouds';
 import { InteractiveHero } from '../components/hero/InteractiveHero';
@@ -19,16 +25,40 @@ export default function HomePage() {
 
   useEffect(() => {
     setIsMounted(true);
+
+    // 1. Initial immediate load from local cache
     setAccounts(getStoredAccounts());
     setSettings(getStoredSettings());
 
-    // Listen for storage changes across tabs if admin updates
+    // 2. Fetch latest data from Supabase Cloud Database
+    fetchAccounts().then((cloudAccounts) => {
+      if (cloudAccounts) setAccounts(cloudAccounts);
+    });
+
+    fetchSettings().then((cloudSettings) => {
+      if (cloudSettings) setSettings(cloudSettings);
+    });
+
+    // 3. Realtime subscription: auto-update whenever admin updates from any device
+    const unsubscribe = subscribeToCloudUpdates((key, value) => {
+      if (key === 'accounts' && Array.isArray(value)) {
+        setAccounts(value);
+      } else if (key === 'settings' && value) {
+        setSettings(value);
+      }
+    });
+
+    // 4. Also listen for localStorage changes across browser tabs on the same device
     const handleStorageChange = () => {
       setAccounts(getStoredAccounts());
       setSettings(getStoredSettings());
     };
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleScrollToCatalog = () => {
