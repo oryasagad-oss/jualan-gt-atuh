@@ -67,6 +67,10 @@ export interface Translations {
     sortPriceDesc: string;
     sortLevelDesc: string;
     totalCountSuffix: string;
+    categoryAll: string;
+    categoryPlain: string;
+    categorySuperSupporter: string;
+    categoryRoles: string;
     emptyTitle: string;
     emptyDesc: string;
     emptyReset: string;
@@ -76,8 +80,10 @@ export interface Translations {
     statusAvailable: string;
     statusSoldOut: string;
     yearPrefix: string;
+    agePrefix: string;
     levelPrefix: string;
     rolePrefix: string;
+    categoryPrefix: string;
     growIdPrefix: string;
     emailPrefix: string;
     specialItems: string;
@@ -93,6 +99,7 @@ export interface Translations {
     statusAvailable: string;
     statusSoldOut: string;
     yearLabel: string;
+    ageLabel: string;
     zoomPhoto: string;
     zoomCloseHint: string;
     priceLabel: string;
@@ -104,9 +111,11 @@ export interface Translations {
     tableLevelExp: string;
     tableGrowId: string;
     tableRole: string;
+    tableCategory: string;
     tableYear: string;
+    tableAge: string;
     tableYearVal: string;
-    tableBackpack: string;
+    tableBackpack?: string;
     questItemsTitle: string;
     untradeableTitle: string;
     descTitle: string;
@@ -202,7 +211,7 @@ const translations: Record<Language, Translations> = {
         'Ready Vintage Legacy Accounts! 💎',
         'Ringmaster 10/10 Rings ready to adopt! 💍',
         '100% Safe & Middleman GTID/GTMART Welcome! 🛡️',
-        'Pure Log Legacy (GrowID + Pass)! 🔑',
+        'Log Legacy (RCE / RCN)! 🔑',
         'CRITICAL HIT! +9999 Gems! ✨',
         'Fast response admin standby! ⚡',
       ],
@@ -224,7 +233,7 @@ const translations: Record<Language, Translations> = {
       card3Badge: '100% CLEAN DATA',
       card3Status: 'Anti Hackback',
       card3Title: 'Clean Legacy & Full Access Guarantee',
-      card3Desc: 'All accounts undergo strict security checks. Pure Log Legacy (GrowID + Pass) with clean history and zero risk of hackback.',
+      card3Desc: 'All accounts undergo strict security checks. Log Legacy (RCE / RCN) with clean history and zero risk of hackback.',
       card3Tag1: '✓ Clean Ban History',
       card3Tag2: '✓ Full Recovery Support',
     },
@@ -238,6 +247,10 @@ const translations: Record<Language, Translations> = {
       sortPriceDesc: 'Price: High to Low',
       sortLevelDesc: 'Level: Highest',
       totalCountSuffix: 'Legacy Accounts',
+      categoryAll: 'All Categories',
+      categoryPlain: 'Plain / Polosan',
+      categorySuperSupporter: 'Super Supporter',
+      categoryRoles: 'Roles',
       emptyTitle: 'No accounts match your criteria',
       emptyDesc: 'Try adjusting your search keywords to find what you are looking for.',
       emptyReset: 'Reset Search',
@@ -247,8 +260,10 @@ const translations: Record<Language, Translations> = {
       statusAvailable: 'AVAILABLE',
       statusSoldOut: 'SOLD OUT',
       yearPrefix: 'Year',
+      agePrefix: 'Age',
       levelPrefix: 'Level:',
       rolePrefix: 'Role:',
+      categoryPrefix: 'Category:',
       growIdPrefix: 'Format ID:',
       emailPrefix: 'Email:',
       specialItems: 'Special Items / Quests:',
@@ -264,18 +279,21 @@ const translations: Record<Language, Translations> = {
       statusAvailable: '● READY FOR ADOPT',
       statusSoldOut: '✕ SOLD OUT',
       yearLabel: 'Creation Year:',
+      ageLabel: 'Account Age:',
       zoomPhoto: 'Zoom Photo',
       zoomCloseHint: 'Click anywhere to close zoom',
       priceLabel: 'OFFICIAL ACCOUNT PRICE:',
       inGameLocksLabel: 'Or pay via In-Game Locks:',
       tableTitle: 'Full Specifications Table',
       tableLogin: 'Account Login Type:',
-      tableLoginVal: 'Log Legacy (Pure GrowID + Password)',
+      tableLoginVal: 'Log Legacy (RCE / RCN)',
       tableEmail: 'Email Status & Access:',
       tableLevelExp: 'Level & EXP:',
       tableGrowId: 'GrowID Format:',
       tableRole: 'Role & Supporter:',
+      tableCategory: 'Category:',
       tableYear: 'Creation Year:',
+      tableAge: 'Account Age (Days):',
       tableYearVal: 'Classic Growtopia Era',
       tableBackpack: 'Backpack Slots & Worlds:',
       questItemsTitle: 'Quest & Ringmaster Items:',
@@ -305,7 +323,7 @@ const translations: Record<Language, Translations> = {
       flowDirectTitle: '2. Direct Transfer Option (Instant):',
       flowDirectDesc: 'Buyer transfers directly to our store QRIS or Bank account. Account details delivered within 5 minutes along with email security guidance.',
       guaranteeTitle: 'Our Account Guarantee',
-      g1: 'Clean Legacy Guarantee: Pure GrowID + Pass with original recovery data and zero hackback risk.',
+      g1: 'Clean Legacy Guarantee: Log Legacy (RCE / RCN) with zero hackback risk.',
       g2: 'Guided Setup: Step-by-step guidance on changing passwords, configuring 2FA, and checking login history.',
       g3: 'Clean Record: Account is clean from bot bans, suspension issues, or illegal links.',
       btnClose: 'Understood & Close',
@@ -371,7 +389,7 @@ const translations: Record<Language, Translations> = {
         'Ready Akun Old 2015 - 2020! 💎',
         'Ringmaster 10/10 Rings siap angkut! 💍',
         '100% Amanah & Siap Rekber GTID/GTMART! 🛡️',
-        'Login Legacy murni (GrowID + Pass)! 🔑',
+        'Login Legacy (RCE / RCN)! 🔑',
         'CRITICAL HIT! +9999 Gems! ✨',
         'Fast Response Admin standby! ⚡',
       ],
@@ -393,7 +411,7 @@ const translations: Record<Language, Translations> = {
       card3Badge: '100% CLEAN DATA',
       card3Status: 'Anti Hackback',
       card3Title: 'Garansi Akses & Data Bersih',
-      card3Desc: 'Semua akun dicek ketat riwayat keamanannya. Login Legacy murni (GrowID + Pass) dengan garansi data bersih tanpa risiko hackback.',
+      card3Desc: 'Semua akun dicek ketat riwayat keamanannya. Login Legacy (RCE / RCN) dengan garansi data bersih tanpa risiko hackback.',
       card3Tag1: '✓ Bebas Riwayat Ban',
       card3Tag2: '✓ Full Data Recovery',
     },
@@ -407,6 +425,10 @@ const translations: Record<Language, Translations> = {
       sortPriceDesc: 'Harga: Termahal',
       sortLevelDesc: 'Level: Tertinggi',
       totalCountSuffix: 'Akun Legacy',
+      categoryAll: 'Semua Kategori',
+      categoryPlain: 'Plain / Polosan',
+      categorySuperSupporter: 'Super Supporter',
+      categoryRoles: 'Roles',
       emptyTitle: 'Tidak ada akun yang sesuai kriteria',
       emptyDesc: 'Coba ubah kata kunci pencarian Anda.',
       emptyReset: 'Reset Pencarian',
@@ -416,8 +438,10 @@ const translations: Record<Language, Translations> = {
       statusAvailable: 'AVAILABLE',
       statusSoldOut: 'SOLD OUT',
       yearPrefix: 'Tahun',
+      agePrefix: 'Umur',
       levelPrefix: 'Level:',
       rolePrefix: 'Role:',
+      categoryPrefix: 'Kategori:',
       growIdPrefix: 'Format ID:',
       emailPrefix: 'Email:',
       specialItems: 'Item Spesial / Quest:',
@@ -433,18 +457,21 @@ const translations: Record<Language, Translations> = {
       statusAvailable: '● READY FOR ADOPT',
       statusSoldOut: '✕ SOLD OUT',
       yearLabel: 'Pembuatan Akun:',
+      ageLabel: 'Umur Akun:',
       zoomPhoto: 'Zoom Foto',
       zoomCloseHint: 'Klik di mana saja untuk menutup zoom',
       priceLabel: 'HARGA RESMI AKUN:',
       inGameLocksLabel: 'Atau bayar via In-Game Locks:',
       tableTitle: 'Tabel Spesifikasi Lengkap',
       tableLogin: 'Tipe Login Akun:',
-      tableLoginVal: 'Log Legacy (GrowID + Password Murni)',
+      tableLoginVal: 'Log Legacy (RCE / RCN)',
       tableEmail: 'Status Email & Akses:',
       tableLevelExp: 'Level & EXP:',
       tableGrowId: 'Format GrowID:',
       tableRole: 'Role & Supporter:',
+      tableCategory: 'Kategori:',
       tableYear: 'Tahun Pembuatan:',
+      tableAge: 'Umur Akun (Days):',
       tableYearVal: 'Era Klasik Growtopia',
       tableBackpack: 'Backpack Slots & World:',
       questItemsTitle: 'Quest & Ringmaster Items:',
@@ -474,7 +501,7 @@ const translations: Record<Language, Translations> = {
       flowDirectTitle: '2. Opsi Direct Transfer:',
       flowDirectDesc: 'Pembeli transfer langsung ke Rekening/QRIS toko kami. Akun langsung diserahkan dalam waktu kurang dari 5 menit beserta panduan pengamanan email.',
       guaranteeTitle: 'Garansi Akun Kami',
-      g1: 'Garansi Log Legacy Bersih: Akun Log Legacy murni (GrowID + Pass) tanpa risiko minus/hackback.',
+      g1: 'Garansi Log Legacy Bersih: Akun Log Legacy (RCE / RCN) tanpa risiko minus/hackback.',
       g2: 'Dipandu Sampai Beres: Pembeli dipandu cara ganti password, pasang 2FA/authenticator, dan cek history login.',
       g3: 'Bebas Riwayat Ilegal: Akun bersih dari bot ban / suspension issues.',
       btnClose: 'Mengerti & Tutup',

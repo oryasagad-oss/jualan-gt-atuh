@@ -5,7 +5,7 @@ import { LanguageProvider } from "../context/LanguageContext";
 
 export const metadata: Metadata = {
   title: "wicstore | Growtopia Legacy Account Store",
-  description: "wicstore - The premier Growtopia Legacy account marketplace. Providing the best Log Legacy (GrowID + Pass) accounts. Safe transactions via QRIS, All Banks, & Official Middleman (GTMART & GTID).",
+  description: "wicstore - The premier Growtopia Legacy account marketplace. Providing the best Log Legacy (RCE / RCN) accounts. Safe transactions via QRIS, All Banks, & Official Middleman (GTMART & GTID).",
   keywords: ["wicstore", "Akun Growtopia", "Jual Akun GT", "Log Legacy Growtopia", "Ringmaster GT", "Rekber GTID", "Rekber GTMART", "Akun Old 2015"],
   authors: [{ name: "wicstore" }],
   icons: {

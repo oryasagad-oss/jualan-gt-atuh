@@ -123,7 +123,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 {account.isAvailable ? t.modal.statusAvailable : t.modal.statusSoldOut}
               </span>
               <span className="text-xs text-slate-500 dark:text-gray-400">
-                {t.modal.yearLabel} <strong className="text-slate-800 dark:text-gray-200">{account.accountYear}</strong>
+                {t.modal.ageLabel} <strong className="text-amber-600 dark:text-amber-400">{account.accountDays || (account.accountYear ? `${account.accountYear}` : '3k Days')}</strong>
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
@@ -261,23 +261,16 @@ export const AccountModal: React.FC<AccountModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 p-3 text-sm">
-                <span className="text-slate-500 dark:text-gray-400">{t.modal.tableRole}</span>
+                <span className="text-slate-500 dark:text-gray-400">{t.modal.tableCategory}</span>
                 <span className="font-semibold text-cyan-700 dark:text-cyan-300">
-                  {account.role}
+                  {account.category || account.role || 'Plain / Polosan'}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 p-3 text-sm">
-                <span className="text-slate-500 dark:text-gray-400">{t.modal.tableYear}</span>
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {account.accountYear} ({t.modal.tableYearVal})
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 p-3 text-sm">
-                <span className="text-slate-500 dark:text-gray-400">{t.modal.tableBackpack}</span>
-                <span className="font-semibold text-slate-800 dark:text-gray-200">
-                  {account.backpackSlots} Slots • {account.worldCount} Worlds
+                <span className="text-slate-500 dark:text-gray-400">{t.modal.tableAge}</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400 font-mono">
+                  {account.accountDays || (account.accountYear ? `${account.accountYear}` : '3k Days')}
                 </span>
               </div>
 

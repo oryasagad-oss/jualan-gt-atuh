@@ -123,13 +123,13 @@ export const AccountCard: React.FC<AccountCardProps> = ({
 
         </div>
 
-        {/* Account Code & Year overlay */}
+        {/* Account Code & Days Age overlay */}
         <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2">
           <span className="text-[11px] font-mono font-bold bg-slate-900/90 text-amber-300 px-2 py-0.5 rounded border border-slate-700">
             #{account.id}
           </span>
-          <span className="text-[11px] bg-slate-900/90 text-gray-300 px-2 py-0.5 rounded border border-slate-700">
-            {t.card.yearPrefix} {account.accountYear}
+          <span className="text-[11px] bg-slate-900/90 text-amber-200 font-medium px-2 py-0.5 rounded border border-slate-700">
+            ⏳ {account.accountDays || (account.accountYear ? `${account.accountYear}` : '3k Days')}
           </span>
         </div>
 
@@ -157,8 +157,8 @@ export const AccountCard: React.FC<AccountCardProps> = ({
               <span className="text-amber-600 dark:text-amber-400 font-pixel text-[11px]">Lv. {account.level}</span>
             </div>
             <div className="bg-slate-50 dark:bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <span className="text-slate-500 dark:text-gray-400">{t.card.rolePrefix}</span>
-              <span className="text-cyan-700 dark:text-cyan-300 font-medium truncate ml-1">{account.role}</span>
+              <span className="text-slate-500 dark:text-gray-400">{t.card.categoryPrefix}</span>
+              <span className="text-cyan-700 dark:text-cyan-300 font-medium truncate ml-1">{account.category || account.role || 'Plain / Polosan'}</span>
             </div>
             <div className="bg-slate-50 dark:bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <span className="text-slate-500 dark:text-gray-400">{t.card.growIdPrefix}</span>

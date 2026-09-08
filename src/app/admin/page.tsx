@@ -404,7 +404,7 @@ export default function AdminPage() {
                   <th className="p-4 font-semibold">Status / Toggle</th>
                   <th className="p-4 font-semibold">Kode & Judul Akun</th>
                   <th className="p-4 font-semibold">Login / Email</th>
-                  <th className="p-4 font-semibold">Level & Role</th>
+                  <th className="p-4 font-semibold">Level & Kategori</th>
                   <th className="p-4 font-semibold">Harga (Rp & DL)</th>
                   <th className="p-4 font-semibold text-right">Aksi Kelola</th>
                 </tr>
@@ -439,8 +439,8 @@ export default function AdminPage() {
                           <span className="font-mono font-bold text-amber-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
                             #{acc.id}
                           </span>
-                          <span className="text-[11px] text-gray-400">
-                            Thn {acc.accountYear}
+                          <span className="text-[11px] text-amber-300/90 font-medium">
+                            ⏳ {acc.accountDays || (acc.accountYear ? `${acc.accountYear}` : '3k Days')}
                           </span>
                         </div>
                         <div className="font-semibold text-white max-w-xs truncate" title={acc.title}>
@@ -456,7 +456,7 @@ export default function AdminPage() {
                               ? 'bg-amber-950 text-amber-300 border border-amber-600/40' 
                               : 'bg-blue-950 text-blue-300 border border-blue-600/40'
                           }`}>
-                            Log {acc.loginType}
+                            {acc.loginType === 'Legacy' ? 'Legacy (RCE/RCN)' : `Log ${acc.loginType}`}
                           </span>
                           <span className="text-[11px] text-gray-400">
                             {acc.emailStatus}
@@ -464,13 +464,13 @@ export default function AdminPage() {
                         </div>
                       </td>
 
-                      {/* Level & Role */}
+                      {/* Level & Category */}
                       <td className="p-4">
                         <div className="font-pixel text-[11px] text-amber-300 mb-0.5">
                           Lv. {acc.level}
                         </div>
-                        <div className="text-[11px] text-cyan-300">
-                          {acc.role}
+                        <div className="text-[11px] text-cyan-300 font-medium">
+                          {acc.category || acc.role || 'Plain / Polosan'}
                         </div>
                       </td>
 

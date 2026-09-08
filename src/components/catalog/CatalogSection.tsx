@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Account, StoreSettings } from '../../types/account';
+import { Account, AccountCategory, StoreSettings } from '../../types/account';
 import { AccountCard } from './AccountCard';
 import { AccountModal } from './AccountModal';
 import { PostGeneratorModal } from '../shared/PostGeneratorModal';
 import { sounds } from '../../utils/soundEffects';
 import { useLanguage } from '../../context/LanguageContext';
-import { PackageSearch, Sparkles, Search, ArrowUpDown, X } from 'lucide-react';
+import { PackageSearch, Sparkles, Search, ArrowUpDown, X, Tag } from 'lucide-react';
 
 interface CatalogSectionProps {
   accounts: Account[];
@@ -16,29 +16,47 @@ interface CatalogSectionProps {
 
 type SortOption = 'latest' | 'price-asc' | 'price-desc' | 'level-desc';
 
+export function getAccountCategory(acc: Account): AccountCategory {
+  if (acc.category) return acc.category;
+  if (acc.role === 'Super Supporter') return 'Super Supporter';
+  const lower = (acc.title + ' ' + acc.description).toLowerCase();
+  if (lower.includes('role') || lower.includes('doctor') || lower.includes('chef') || lower.includes('farmer')) {
+    return 'Roles';
+  }
+  return 'Plain / Polosan';
+}
+
 export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settings }) => {
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<'All' | AccountCategory>('All');
   const [sortBy, setSortBy] = useState<SortOption>('latest');
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [postGenAccount, setPostGenAccount] = useState<Account | null>(null);
 
-  // Filter & Sort Logic (Focused entirely on Legacy accounts)
+  // Filter & Sort Logic
   const filteredAccounts = useMemo(() => {
     return accounts
       .filter((acc) => {
+        // Category filter (Plain / Polosan, Super Supporter, Roles)
+        if (selectedCategory !== 'All' && getAccountCategory(acc) !== selectedCategory) {
+          return false;
+        }
+
         // Search query
         if (search.trim()) {
           const query = search.toLowerCase().trim();
           const matchTitle = acc.title.toLowerCase().includes(query);
           const matchId = acc.id.toLowerCase().includes(query);
           const matchGrowId = acc.growIdFormat.toLowerCase().includes(query);
-          const matchYear = String(acc.accountYear).includes(query);
+          const matchDays = acc.accountDays ? acc.accountDays.toLowerCase().includes(query) : false;
+          const matchYear = String(acc.accountYear || '').includes(query);
+          const matchCategory = (acc.category || getAccountCategory(acc)).toLowerCase().includes(query);
           const matchQuests = acc.questItems.some((q) => q.toLowerCase().includes(query));
           const matchHighlights = acc.untradeableHighlights.some((h) => h.toLowerCase().includes(query));
           const matchDesc = acc.description.toLowerCase().includes(query);
 
-          if (!matchTitle && !matchId && !matchGrowId && !matchYear && !matchQuests && !matchHighlights && !matchDesc) {
+          if (!matchTitle && !matchId && !matchGrowId && !matchDays && !matchYear && !matchCategory && !matchQuests && !matchHighlights && !matchDesc) {
             return false;
           }
         }
@@ -134,6 +152,47 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
           </select>
         </div>
 
+      </div>
+
+      {/* Category Filter Tabs (3 Primary Categories: Plain / Polosan, Super Supporter, Roles) */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-8">
+        {[
+          { key: 'All', label: t.catalog.categoryAll, icon: '🌟' },
+          { key: 'Plain / Polosan', label: t.catalog.categoryPlain, icon: '📦' },
+          { key: 'Super Supporter', label: t.catalog.categorySuperSupporter, icon: '👑' },
+          { key: 'Roles', label: t.catalog.categoryRoles, icon: '🎖️' },
+        ].map((cat) => {
+          const count = cat.key === 'All'
+            ? accounts.length
+            : accounts.filter((a) => getAccountCategory(a) === cat.key).length;
+          const isActive = selectedCategory === cat.key;
+          return (
+            <button
+              key={cat.key}
+              onClick={() => {
+                sounds.playClickSound();
+                setSelectedCategory(cat.key as any);
+              }}
+              className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
+                isActive
+                  ? 'bg-amber-500 text-black border-amber-400 shadow-pixel-amber scale-[1.02]'
+                  : 'bg-white dark:bg-gt-card text-slate-700 dark:text-gray-300 border-slate-200 dark:border-slate-800 hover:border-amber-400/60 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <span className="text-xs">{cat.icon}</span>
+              <span>{cat.label}</span>
+              <span
+                className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
+                  isActive
+                    ? 'bg-black/20 text-black font-extrabold'
+                    : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-gray-400'
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Accounts Grid */}

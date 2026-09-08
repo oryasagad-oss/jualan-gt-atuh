@@ -120,7 +120,7 @@ export function generateDiscordOrderMessage(
     return `Halo Admin wicstore, saya ingin order Akun Growtopia:
 • Kode: #${account.id}
 • Judul: ${account.title}
-• Tipe: Log Legacy (GrowID + Pass)
+• Tipe: Log Legacy (RCE / RCN)
 • Harga: ${priceRpStr} (~${lockInfo.text})
 • Rencana Pembayaran: ${paymentMethod}
 Mohon info ketersediaan & alur transaksi MM Discord GTID/GTMART atau Direct. Terima kasih!`;
@@ -129,7 +129,7 @@ Mohon info ketersediaan & alur transaksi MM Discord GTID/GTMART atau Direct. Ter
   return `Hello wicstore Admin, I would like to order this Growtopia Account:
 • Code: #${account.id}
 • Title: ${account.title}
-• Type: Log Legacy (GrowID + Pass)
+• Type: Log Legacy (RCE / RCN)
 • Price: ${priceRpStr} (~${lockInfo.text})
 • Payment Plan: ${paymentMethod}
 Please let me know if it is available and how to proceed with Discord Middleman (GTID/GTMART) or Direct. Thank you!`;
@@ -142,12 +142,14 @@ export function generatePostTemplate(
 ): string {
   const lockInfo = formatLocks(account.priceIdr, settings.dlRateIdr);
   const priceRpStr = formatRupiah(account.priceIdr);
+  const categoryStr = account.category || account.role || 'Plain / Polosan';
+  const ageStr = account.accountDays || (account.accountYear ? `${account.accountYear}` : '3k Days');
 
   if (mode === 'short') {
     return `🔥 WTS AKUN GROWTOPIA LEGACY [${account.id}]
 💎 ${account.title}
-⭐ Level: ${account.level} | Role: ${account.role}
-🔑 Login: [LOG LEGACY] (${account.emailStatus})
+⭐ Level: ${account.level} | Kategori: ${categoryStr} | Umur: ${ageStr}
+🔑 Login: [LOG LEGACY] (RCE / RCN - ${account.emailStatus})
 💰 Harga: ${priceRpStr} / ${lockInfo.text}
 🛡️ Menerima Direct / MM GTID & GTMART Discord
 🎮 Server Discord: ${settings.discordServerUrl || 'https://discord.gg/eUXdAKsvBY'}
@@ -167,14 +169,12 @@ export function generatePostTemplate(
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 SPESIFIKASI DETAIL AKUN:
-• Tipe Login : [LOG LEGACY (GrowID + Pass)]
+• Tipe Login : [LOG LEGACY (RCE / RCN)]
 • Status Email : ${account.emailStatus}
 • Level / Exp : Lv. ${account.level} (${account.expPercent ?? 0}%)
 • Format GrowID: ${account.growIdFormat}
-• Status Supporter: ${account.role}
-• Tahun Pembuatan: ${account.accountYear}
-• Backpack Slots : ${account.backpackSlots} Slots
-• Jumlah World   : ${account.worldCount} Worlds
+• Kategori     : ${categoryStr}
+• Umur Akun    : ${ageStr}
 
 🏆 QUEST & RINGMASTER ITEMS:
 ${itemsList || '  • Standard Quest'}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Account, LoginType, EmailStatus, RoleStatus, StoreSettings } from '../../types/account';
+import { Account, AccountCategory, LoginType, EmailStatus, StoreSettings } from '../../types/account';
 import { formatLocks, formatRupiah } from '../../utils/formatters';
 import { sounds } from '../../utils/soundEffects';
 import { X, Upload, Plus, Trash2, Image as ImageIcon, Sparkles, Check, Info } from 'lucide-react';
@@ -24,16 +24,16 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
   const [formData, setFormData] = useState<Account>({
     id: accountToEdit?.id || `GT-${Math.floor(1000 + Math.random() * 9000)}`,
     title: accountToEdit?.title || '',
+    category: accountToEdit?.category || (accountToEdit?.role === 'Super Supporter' ? 'Super Supporter' : 'Plain / Polosan'),
     loginType: accountToEdit?.loginType || 'Legacy',
     emailStatus: accountToEdit?.emailStatus || 'Clean Gmail',
     isAvailable: accountToEdit ? accountToEdit.isAvailable : true,
     level: accountToEdit?.level || 50,
     expPercent: accountToEdit?.expPercent || 0,
     growIdFormat: accountToEdit?.growIdFormat || 'Clean 5 Letter (No Numbers)',
+    accountDays: accountToEdit?.accountDays || (accountToEdit?.accountYear ? `${accountToEdit.accountYear}` : '3k Days'),
     role: accountToEdit?.role || 'Supporter',
-    accountYear: accountToEdit?.accountYear || 2017,
-    backpackSlots: accountToEdit?.backpackSlots || 40,
-    worldCount: accountToEdit?.worldCount || 5,
+    accountYear: accountToEdit?.accountYear,
     priceIdr: accountToEdit?.priceIdr || 450000,
     questItems: accountToEdit?.questItems || ['Focused Eyes', 'Ringmaster (10 Rings)'],
     untradeableHighlights: accountToEdit?.untradeableHighlights || ['Clean Email 1st Hand', 'Growtokens: 50+'],
@@ -229,7 +229,7 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, loginType: e.target.value as LoginType })}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
               >
-                <option value="Legacy">Log Legacy (GrowID + Password Murni)</option>
+                <option value="Legacy">Log Legacy (RCE / RCN)</option>
                 <option value="Gmail">Log Gmail (First Hand Clean)</option>
                 <option value="Ubisoft">Ubisoft Connect</option>
               </select>
@@ -251,7 +251,7 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
             </div>
           </div>
 
-          {/* Level, GrowID, Role, Year */}
+          {/* Level, Category, Days, GrowID */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1">
@@ -269,28 +269,34 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Role / Supporter:
+                Kategori Akun:
               </label>
               <select
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as RoleStatus })}
+                value={formData.category}
+                onChange={(e) => setFormData({ 
+                  ...formData, 
+                  category: e.target.value as AccountCategory,
+                  role: e.target.value === 'Super Supporter' ? 'Super Supporter' : 'None'
+                })}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
               >
-                <option value="None">None</option>
-                <option value="Supporter">Supporter</option>
+                <option value="Plain / Polosan">Plain / Polosan</option>
                 <option value="Super Supporter">Super Supporter</option>
+                <option value="Roles">Roles</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Tahun Pembuatan:
+                Umur Akun (Days):
               </label>
               <input
-                type="number"
-                value={formData.accountYear}
-                onChange={(e) => setFormData({ ...formData, accountYear: Number(e.target.value) })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+                type="text"
+                required
+                value={formData.accountDays}
+                onChange={(e) => setFormData({ ...formData, accountDays: e.target.value })}
+                placeholder="misal: 3k Days / 2.9k Days"
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white font-medium"
               />
             </div>
 
@@ -303,33 +309,6 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
                 value={formData.growIdFormat}
                 onChange={(e) => setFormData({ ...formData, growIdFormat: e.target.value })}
                 placeholder="misal: 4 Letter Clean"
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-              />
-            </div>
-          </div>
-
-          {/* Slots & Worlds */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Backpack Slots:
-              </label>
-              <input
-                type="number"
-                value={formData.backpackSlots}
-                onChange={(e) => setFormData({ ...formData, backpackSlots: Number(e.target.value) })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Jumlah World / World Lock:
-              </label>
-              <input
-                type="number"
-                value={formData.worldCount}
-                onChange={(e) => setFormData({ ...formData, worldCount: Number(e.target.value) })}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
               />
             </div>
