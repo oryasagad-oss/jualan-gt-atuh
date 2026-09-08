@@ -91,7 +91,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
         if (!a.isAvailable && b.isAvailable) return 1;
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
-  }, [accounts, search, sortBy]);
+  }, [accounts, selectedCategory, search, sortBy]);
 
   return (
     <section id="catalog-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
@@ -184,8 +184,8 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
             <button
               key={cat.key}
               onClick={() => {
-                sounds.playClickSound();
                 setSelectedCategory(cat.key as any);
+                sounds.playClickSound();
               }}
               className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
                 isActive
