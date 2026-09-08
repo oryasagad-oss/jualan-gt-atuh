@@ -9,8 +9,17 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   discordServerUrl: "https://discord.gg/eUXdAKsvBY",
   gtmartDiscordUrl: "https://discord.gg/gtmart",
   gtidDiscordUrl: "https://discord.gg/gtid",
-  dlRateIdr: 3500, // 1 DL = Rp 3.500
+  dlRateIdr: 538, // 1 DL = Rp 538 (Market GTID)
   adminPin: "1234",
+  autoSyncDlRate: true,
+  dlRateSource: 'buy',
+  dlRateLastSyncedAt: new Date().toISOString(),
+  dlRateLiveInfo: {
+    buy: 538,
+    sell: 555,
+    buyBgl: 53800,
+    sellBgl: 55500,
+  },
 };
 
 // High quality themed screenshot previews for Growtopia Legacy accounts

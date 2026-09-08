@@ -113,6 +113,104 @@ export async function saveStoredAccounts(accounts: Account[]): Promise<void> {
   }
 }
 
+export interface GtidDlRateData {
+  buy: number;
+  sell: number;
+  average: number;
+  buyBgl: number;
+  sellBgl: number;
+  spread: { dl: number; bgl: number };
+  posts24h?: number;
+  sources?: number;
+  updatedAt: string;
+}
+
+export async function fetchLiveGtidDlRate(): Promise<GtidDlRateData | null> {
+  // 1. Try our internal Next.js API proxy route first (bypasses CORS & caches)
+  try {
+    const res = await fetch('/api/dl-rate', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return json.data as GtidDlRateData;
+      }
+    }
+  } catch {
+    // If running in an environment where /api is not reached or direct fallback needed
+  }
+
+  // 2. Direct fallback to official GTID endpoints
+  const fallbackUrls = ['https://api.gtid.pro/price', 'https://gtid.pro/price'];
+  for (const url of fallbackUrls) {
+    try {
+      const directRes = await fetch(url, { cache: 'no-store' });
+      if (directRes.ok) {
+        const data = await directRes.json();
+        if (data && typeof data.buy === 'number' && typeof data.sell === 'number') {
+          const buy = Math.round(data.buy);
+          const sell = Math.round(data.sell);
+          const average = Math.round((buy + sell) / 2);
+          const buyBgl = Math.round(data.buyBgl || buy * 100);
+          const sellBgl = Math.round(data.sellBgl || sell * 100);
+          return {
+            buy,
+            sell,
+            average,
+            buyBgl,
+            sellBgl,
+            spread: data.spread || { dl: sell - buy, bgl: sellBgl - buyBgl },
+            posts24h: data.posts24h,
+            sources: data.sources,
+            updatedAt: data.updatedAt || new Date().toISOString(),
+          };
+        }
+      }
+    } catch {
+      // Continue to next url
+    }
+  }
+
+  return null;
+}
+
+export async function syncDlRateWithGtid(
+  currentSettings: StoreSettings,
+  force: boolean = false
+): Promise<StoreSettings> {
+  const isAuto = currentSettings.autoSyncDlRate !== false;
+  if (!isAuto && !force) return currentSettings;
+
+  try {
+    const liveData = await fetchLiveGtidDlRate();
+    if (!liveData) return currentSettings;
+
+    const source = currentSettings.dlRateSource || 'buy';
+    const targetRate = source === 'sell' ? liveData.sell : source === 'average' ? liveData.average : liveData.buy;
+
+    if (targetRate && targetRate > 0) {
+      const updated: StoreSettings = {
+        ...currentSettings,
+        dlRateIdr: targetRate,
+        dlRateLastSyncedAt: new Date().toISOString(),
+        dlRateLiveInfo: {
+          buy: liveData.buy,
+          sell: liveData.sell,
+          buyBgl: liveData.buyBgl,
+          sellBgl: liveData.sellBgl,
+          updatedAt: liveData.updatedAt,
+        },
+      };
+
+      await saveStoredSettings(updated);
+      return updated;
+    }
+  } catch (err) {
+    console.warn('Failed to sync DL rate with GTID:', err);
+  }
+
+  return currentSettings;
+}
+
 export async function fetchSettings(): Promise<StoreSettings> {
   try {
     const { data, error } = await supabase
@@ -127,7 +225,20 @@ export async function fetchSettings(): Promise<StoreSettings> {
     }
 
     if (data && data.value) {
-      const merged = { ...DEFAULT_STORE_SETTINGS, ...data.value };
+      const merged: StoreSettings = { ...DEFAULT_STORE_SETTINGS, ...data.value };
+
+      // Background auto-sync if enabled and last synced was > 5 minutes ago
+      if (merged.autoSyncDlRate !== false) {
+        const lastSync = merged.dlRateLastSyncedAt ? new Date(merged.dlRateLastSyncedAt).getTime() : 0;
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+
+        if (now - lastSync > fiveMinutes) {
+          // Trigger non-blocking background sync
+          syncDlRateWithGtid(merged).catch((e) => console.warn('Background sync error:', e));
+        }
+      }
+
       if (typeof window !== 'undefined') {
         localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(merged));
       }

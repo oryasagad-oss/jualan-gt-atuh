@@ -88,6 +88,9 @@ export const TrustBadges: React.FC<TrustBadgesProps> = ({ settings, onOpenRekber
                 <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 text-blue-700 dark:text-blue-300 font-medium border border-slate-200 dark:border-slate-700">Dana</span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 text-purple-700 dark:text-purple-300 font-medium border border-slate-200 dark:border-slate-700">OVO</span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/90 text-blue-700 dark:text-blue-400 font-medium border border-slate-200 dark:border-slate-700">BCA/Mandiri/BRI</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-100/60 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 font-mono font-bold border border-amber-300/40 dark:border-amber-500/40 flex items-center gap-1">
+                  <span>💠 1 DL = Rp {settings.dlRateIdr.toLocaleString('id-ID')}</span>
+                </span>
               </div>
             </div>
           </div>

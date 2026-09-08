@@ -40,8 +40,18 @@ export interface StoreSettings {
   discordServerUrl?: string;
   gtmartDiscordUrl: string;
   gtidDiscordUrl: string;
-  dlRateIdr: number; // e.g. 3500
+  dlRateIdr: number; // e.g. 538
   adminPin: string; // default '1234'
+  autoSyncDlRate?: boolean;
+  dlRateSource?: 'buy' | 'sell' | 'average';
+  dlRateLastSyncedAt?: string;
+  dlRateLiveInfo?: {
+    buy: number;
+    sell: number;
+    buyBgl: number;
+    sellBgl: number;
+    updatedAt?: string;
+  };
 }
 
 export interface FilterState {
