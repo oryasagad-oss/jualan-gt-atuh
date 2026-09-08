@@ -7,7 +7,8 @@ export type AdminStatus = 'ONLINE' | 'OFFLINE' | 'FAST_RESPONSE';
 export interface Account {
   id: string; // e.g. "GT-8801"
   title: string;
-  category: AccountCategory;
+  category?: AccountCategory;
+  categories?: AccountCategory[];
   loginType: LoginType;
   emailStatus: EmailStatus;
   isAvailable: boolean;

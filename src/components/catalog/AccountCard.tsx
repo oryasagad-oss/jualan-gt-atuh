@@ -7,6 +7,8 @@ import { sounds } from '../../utils/soundEffects';
 import { useLanguage } from '../../context/LanguageContext';
 import { ShieldCheck, ChevronLeft, ChevronRight, CheckCircle2, Eye, Star } from 'lucide-react';
 
+import { getAccountCategories } from './CatalogSection';
+
 interface AccountCardProps {
   account: Account;
   settings: StoreSettings;
@@ -158,7 +160,9 @@ export const AccountCard: React.FC<AccountCardProps> = ({
             </div>
             <div className="bg-slate-50 dark:bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <span className="text-slate-500 dark:text-gray-400">{t.card.categoryPrefix}</span>
-              <span className="text-cyan-700 dark:text-cyan-300 font-medium truncate ml-1">{account.category || account.role || 'Plain / Polosan'}</span>
+              <span className="text-cyan-700 dark:text-cyan-300 font-medium truncate ml-1 text-[11px]" title={getAccountCategories(account).join(', ')}>
+                {getAccountCategories(account).join(' • ')}
+              </span>
             </div>
             <div className="bg-slate-50 dark:bg-slate-900/90 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <span className="text-slate-500 dark:text-gray-400">{t.card.growIdPrefix}</span>
@@ -170,29 +174,31 @@ export const AccountCard: React.FC<AccountCardProps> = ({
             </div>
           </div>
 
-          {/* Quest & Untradeable Item Highlights */}
-          <div className="mb-4">
-            <div className="text-[11px] text-slate-500 dark:text-gray-400 font-semibold mb-1 flex items-center gap-1">
-              <Star className="w-3 h-3 text-amber-500 dark:text-amber-400" />
-              <span>{t.card.specialItems}</span>
+          {/* Quest & Untradeable Item Highlights (Only if items exist) */}
+          {account.questItems && account.questItems.length > 0 && (
+            <div className="mb-4">
+              <div className="text-[11px] text-slate-500 dark:text-gray-400 font-semibold mb-1 flex items-center gap-1">
+                <Star className="w-3 h-3 text-amber-500 dark:text-amber-400" />
+                <span>{t.card.specialItems}</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {account.questItems.slice(0, 3).map((item, idx) => (
+                  <span 
+                    key={idx}
+                    className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-slate-800 flex items-center gap-1"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-amber-500 dark:bg-amber-400"></span>
+                    {item}
+                  </span>
+                ))}
+                {account.questItems.length > 3 && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-amber-600 dark:text-amber-400 font-mono">
+                    +{account.questItems.length - 3} {t.card.moreItems}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {account.questItems.slice(0, 3).map((item, idx) => (
-                <span 
-                  key={idx}
-                  className="text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-slate-800 flex items-center gap-1"
-                >
-                  <span className="w-1 h-1 rounded-full bg-amber-500 dark:bg-amber-400"></span>
-                  {item}
-                </span>
-              ))}
-              {account.questItems.length > 3 && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-amber-600 dark:text-amber-400 font-mono">
-                  +{account.questItems.length - 3} {t.card.moreItems}
-                </span>
-              )}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Pricing & Footer Actions */}

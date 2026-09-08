@@ -20,6 +20,7 @@ import { sounds } from '../../utils/soundEffects';
 import { AdminLoginModal } from '../../components/admin/AdminLoginModal';
 import { AccountFormModal } from '../../components/admin/AccountFormModal';
 import { StoreSettingsModal } from '../../components/admin/StoreSettingsModal';
+import { getAccountCategories } from '../../components/catalog/CatalogSection';
 import { 
   ArrowLeft, 
   Plus, 
@@ -470,7 +471,7 @@ export default function AdminPage() {
                           Lv. {acc.level}
                         </div>
                         <div className="text-[11px] text-cyan-300 font-medium">
-                          {acc.category || acc.role || 'Plain / Polosan'}
+                          {getAccountCategories(acc).join(' • ')}
                         </div>
                       </td>
 

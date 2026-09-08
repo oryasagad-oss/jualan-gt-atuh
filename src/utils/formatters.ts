@@ -142,7 +142,9 @@ export function generatePostTemplate(
 ): string {
   const lockInfo = formatLocks(account.priceIdr, settings.dlRateIdr);
   const priceRpStr = formatRupiah(account.priceIdr);
-  const categoryStr = account.category || account.role || 'Plain / Polosan';
+  const categoryStr = (account.categories && account.categories.length > 0)
+    ? account.categories.join(' • ')
+    : (account.category || account.role || 'Plain / Polosan');
   const ageStr = account.accountDays || (account.accountYear ? `${account.accountYear}` : '3k Days');
 
   if (mode === 'short') {
@@ -156,8 +158,13 @@ export function generatePostTemplate(
 🆔 Admin Discord : ${settings.discordUsername || 'wicstore'} (ID: ${settings.discordId})`;
   }
 
-  const itemsList = account.questItems.map(item => `  • ${item}`).join('\n');
-  const untradeableList = account.untradeableHighlights.map(item => `  • ${item}`).join('\n');
+  const itemsList = (account.questItems || []).map(item => `  • ${item}`).join('\n');
+  const untradeableList = (account.untradeableHighlights || []).map(item => `  • ${item}`).join('\n');
+
+  const extraSections = [
+    itemsList ? `🏆 QUEST & RINGMASTER ITEMS:\n${itemsList}` : '',
+    untradeableList ? `✨ HIGHLIGHTS LAINNYA:\n${untradeableList}` : ''
+  ].filter(Boolean).join('\n\n');
 
   return `╔══════════════════════════════════════╗
    💎 WICSTORE GROWTOPIA LEGACY STORE 💎
@@ -175,14 +182,7 @@ export function generatePostTemplate(
 • Format GrowID: ${account.growIdFormat}
 • Kategori     : ${categoryStr}
 • Umur Akun    : ${ageStr}
-
-🏆 QUEST & RINGMASTER ITEMS:
-${itemsList || '  • Standard Quest'}
-
-✨ HIGHLIGHTS LAINNYA:
-${untradeableList || '  • No Minus'}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${extraSections ? `${extraSections}\n\n` : ''}━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💰 HARGA:
 💵 Rupiah (IDR): ${priceRpStr}
 💠 Lock Rate   : ${lockInfo.text} (Kurs 1 DL = ${formatRupiah(settings.dlRateIdr)})

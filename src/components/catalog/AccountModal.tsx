@@ -19,6 +19,7 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react';
+import { getAccountCategories } from './CatalogSection';
 
 interface AccountModalProps {
   account: Account | null;
@@ -263,7 +264,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 p-3 text-sm">
                 <span className="text-slate-500 dark:text-gray-400">{t.modal.tableCategory}</span>
                 <span className="font-semibold text-cyan-700 dark:text-cyan-300">
-                  {account.category || account.role || 'Plain / Polosan'}
+                  {getAccountCategories(account).join(' • ')}
                 </span>
               </div>
 
@@ -277,40 +278,50 @@ export const AccountModal: React.FC<AccountModalProps> = ({
             </div>
           </div>
 
-          {/* Quest & Untradeable Items Box */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
-              <h4 className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-                <span>{t.modal.questItemsTitle}</span>
-              </h4>
-              <ul className="space-y-1.5 text-xs text-slate-700 dark:text-gray-200">
-                {account.questItems.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-amber-500 dark:text-amber-400 font-bold">✓</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Quest & Untradeable Items Box (Only if at least one section has items) */}
+          {((account.questItems && account.questItems.length > 0) || (account.untradeableHighlights && account.untradeableHighlights.length > 0)) && (
+            <div className={`grid gap-4 ${
+              account.questItems && account.questItems.length > 0 && account.untradeableHighlights && account.untradeableHighlights.length > 0
+                ? 'grid-cols-1 sm:grid-cols-2'
+                : 'grid-cols-1'
+            }`}>
+              
+              {account.questItems && account.questItems.length > 0 && (
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
+                  <h4 className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+                    <span>{t.modal.questItemsTitle}</span>
+                  </h4>
+                  <ul className="space-y-1.5 text-xs text-slate-700 dark:text-gray-200">
+                    {account.questItems.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-amber-500 dark:text-amber-400 font-bold">✓</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
-              <h4 className="text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
-                <span>{t.modal.untradeableTitle}</span>
-              </h4>
-              <ul className="space-y-1.5 text-xs text-slate-700 dark:text-gray-200">
-                {account.untradeableHighlights.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-cyan-500 dark:text-cyan-400 font-bold">★</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              {account.untradeableHighlights && account.untradeableHighlights.length > 0 && (
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800">
+                  <h4 className="text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
+                    <span>{t.modal.untradeableTitle}</span>
+                  </h4>
+                  <ul className="space-y-1.5 text-xs text-slate-700 dark:text-gray-200">
+                    {account.untradeableHighlights.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-cyan-500 dark:text-cyan-400 font-bold">★</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-          </div>
+            </div>
+          )}
 
           {/* Description & Seller Notes */}
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm">

@@ -16,14 +16,28 @@ interface CatalogSectionProps {
 
 type SortOption = 'latest' | 'price-asc' | 'price-desc' | 'level-desc';
 
-export function getAccountCategory(acc: Account): AccountCategory {
-  if (acc.category) return acc.category;
-  if (acc.role === 'Super Supporter') return 'Super Supporter';
+export function getAccountCategories(acc: Account): AccountCategory[] {
+  if (Array.isArray(acc.categories) && acc.categories.length > 0) {
+    return acc.categories;
+  }
+  if (Array.isArray(acc.category)) {
+    return acc.category;
+  }
+  if (typeof acc.category === 'string' && acc.category) {
+    return [acc.category];
+  }
+  if (acc.role === 'Super Supporter') {
+    return ['Super Supporter'];
+  }
   const lower = (acc.title + ' ' + acc.description).toLowerCase();
   if (lower.includes('role') || lower.includes('doctor') || lower.includes('chef') || lower.includes('farmer')) {
-    return 'Roles';
+    return ['Roles'];
   }
-  return 'Plain / Polosan';
+  return ['Plain / Polosan'];
+}
+
+export function getAccountCategory(acc: Account): AccountCategory {
+  return getAccountCategories(acc)[0] || 'Plain / Polosan';
 }
 
 export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settings }) => {
@@ -38,8 +52,8 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
   const filteredAccounts = useMemo(() => {
     return accounts
       .filter((acc) => {
-        // Category filter (Plain / Polosan, Super Supporter, Roles)
-        if (selectedCategory !== 'All' && getAccountCategory(acc) !== selectedCategory) {
+        // Multi-Category filter: matches if the account belongs to the selected category
+        if (selectedCategory !== 'All' && !getAccountCategories(acc).includes(selectedCategory)) {
           return false;
         }
 
@@ -51,7 +65,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
           const matchGrowId = acc.growIdFormat.toLowerCase().includes(query);
           const matchDays = acc.accountDays ? acc.accountDays.toLowerCase().includes(query) : false;
           const matchYear = String(acc.accountYear || '').includes(query);
-          const matchCategory = (acc.category || getAccountCategory(acc)).toLowerCase().includes(query);
+          const matchCategory = getAccountCategories(acc).some(c => c.toLowerCase().includes(query));
           const matchQuests = acc.questItems.some((q) => q.toLowerCase().includes(query));
           const matchHighlights = acc.untradeableHighlights.some((h) => h.toLowerCase().includes(query));
           const matchDesc = acc.description.toLowerCase().includes(query);
@@ -164,7 +178,7 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
         ].map((cat) => {
           const count = cat.key === 'All'
             ? accounts.length
-            : accounts.filter((a) => getAccountCategory(a) === cat.key).length;
+            : accounts.filter((a) => getAccountCategories(a).includes(cat.key as AccountCategory)).length;
           const isActive = selectedCategory === cat.key;
           return (
             <button

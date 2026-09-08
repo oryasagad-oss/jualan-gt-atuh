@@ -21,10 +21,17 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
 }) => {
   const isEdit = !!accountToEdit;
 
+  const initialCategories: AccountCategory[] = accountToEdit?.categories && accountToEdit.categories.length > 0
+    ? accountToEdit.categories
+    : accountToEdit?.category
+      ? [accountToEdit.category]
+      : ['Super Supporter'];
+
   const [formData, setFormData] = useState<Account>({
     id: accountToEdit?.id || `GT-${Math.floor(1000 + Math.random() * 9000)}`,
     title: accountToEdit?.title || '',
-    category: accountToEdit?.category || (accountToEdit?.role === 'Super Supporter' ? 'Super Supporter' : 'Plain / Polosan'),
+    category: initialCategories[0] || 'Super Supporter',
+    categories: initialCategories,
     loginType: accountToEdit?.loginType || 'Legacy',
     emailStatus: accountToEdit?.emailStatus || 'Clean Gmail',
     isAvailable: accountToEdit ? accountToEdit.isAvailable : true,
@@ -35,8 +42,8 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
     role: accountToEdit?.role || 'Supporter',
     accountYear: accountToEdit?.accountYear,
     priceIdr: accountToEdit?.priceIdr || 450000,
-    questItems: accountToEdit?.questItems || ['Focused Eyes', 'Ringmaster (10 Rings)'],
-    untradeableHighlights: accountToEdit?.untradeableHighlights || ['Clean Email 1st Hand', 'Growtokens: 50+'],
+    questItems: accountToEdit?.questItems || [],
+    untradeableHighlights: accountToEdit?.untradeableHighlights || [],
     images: accountToEdit?.images || [
       'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'
     ],
@@ -251,8 +258,8 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
             </div>
           </div>
 
-          {/* Level, Category, Days, GrowID */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {/* Level, Days, GrowID */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1">
                 Level Akun:
@@ -265,25 +272,6 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, level: Number(e.target.value) })}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
               />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Kategori Akun:
-              </label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  category: e.target.value as AccountCategory,
-                  role: e.target.value === 'Super Supporter' ? 'Super Supporter' : 'None'
-                })}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-              >
-                <option value="Plain / Polosan">Plain / Polosan</option>
-                <option value="Super Supporter">Super Supporter</option>
-                <option value="Roles">Roles</option>
-              </select>
             </div>
 
             <div>
@@ -311,6 +299,52 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
                 placeholder="misal: 4 Letter Clean"
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
               />
+            </div>
+          </div>
+
+          {/* Multi-Category Selector */}
+          <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
+            <label className="block text-xs font-semibold text-gray-200 mb-1">
+              Kategori Akun (Bisa Pilih Lebih Dari 1):
+            </label>
+            <p className="text-[11px] text-gray-400 mb-2.5">
+              Pilih satu atau gabungkan kategori (contoh: Role yang juga Super Supporter, atau Polosan yang Super Supporter).
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {(['Plain / Polosan', 'Super Supporter', 'Roles'] as const).map((cat) => {
+                const currentCats = formData.categories || (formData.category ? [formData.category] : []);
+                const isSelected = currentCats.includes(cat);
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                      sounds.playClickSound();
+                      let updated: AccountCategory[];
+                      if (isSelected) {
+                        updated = currentCats.filter((c) => c !== cat);
+                        if (updated.length === 0) updated = [cat]; // maintain at least 1
+                      } else {
+                        updated = [...currentCats, cat];
+                      }
+                      setFormData({
+                        ...formData,
+                        categories: updated,
+                        category: updated[0] || 'Plain / Polosan',
+                        role: updated.includes('Super Supporter') ? 'Super Supporter' : 'None',
+                      });
+                    }}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
+                      isSelected
+                        ? 'bg-amber-500 text-black border-amber-400 shadow-pixel-amber'
+                        : 'bg-slate-900 text-gray-400 border-slate-700 hover:text-white hover:border-slate-500'
+                    }`}
+                  >
+                    <span className="text-[12px]">{isSelected ? '✓' : '+'}</span>
+                    <span>{cat}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -434,6 +468,48 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
                   </button>
                 </span>
               ))}
+            </div>
+          </div>
+
+          {/* Highlights & Untradeables Tag Manager */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-300 mb-1">
+              Highlights & Untradeables:
+            </label>
+            <div className="flex gap-2 mb-2">
+              <input
+                type="text"
+                value={highlightInput}
+                onChange={(e) => setHighlightInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddHighlight();
+                  }
+                }}
+                placeholder="Contoh: No Minus, 1st Hand, Rare Items (Boleh dikosongkan)"
+                className="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+              />
+              <button
+                type="button"
+                onClick={handleAddHighlight}
+                className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs rounded-xl"
+              >
+                + Tambah
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {formData.untradeableHighlights.map((item, idx) => (
+                <span key={idx} className="text-xs px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-cyan-300 flex items-center gap-1.5">
+                  <span>{item}</span>
+                  <button type="button" onClick={() => handleRemoveHighlight(idx)} className="text-gray-500 hover:text-red-400">
+                    &times;
+                  </button>
+                </span>
+              ))}
+              {formData.untradeableHighlights.length === 0 && (
+                <span className="text-[11px] text-gray-500 italic">Tidak ada highlights (kosong).</span>
+              )}
             </div>
           </div>
 
