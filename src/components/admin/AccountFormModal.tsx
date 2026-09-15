@@ -4,13 +4,13 @@ import React, { useState } from 'react';
 import { Account, AccountCategory, LoginType, EmailStatus, StoreSettings } from '../../types/account';
 import { formatLocks, formatRupiah } from '../../utils/formatters';
 import { sounds } from '../../utils/soundEffects';
-import { X, Upload, Plus, Trash2, Image as ImageIcon, Sparkles, Check, Info } from 'lucide-react';
+import { X, Upload, Plus, Trash2, Image as ImageIcon, Sparkles, Check, Info, Loader2 } from 'lucide-react';
 
 interface AccountFormModalProps {
   accountToEdit?: Account | null;
   defaultCategory?: AccountCategory;
   settings: StoreSettings;
-  onSave: (account: Account) => void;
+  onSave: (account: Account) => Promise<any> | void;
   onClose: () => void;
 }
 
@@ -62,6 +62,7 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [questInput, setQuestInput] = useState('');
   const [highlightInput, setHighlightInput] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Helper to compress local images to lightweight JPEG via Canvas (prevents quota issues)
   const compressImage = (file: File): Promise<string> => {
@@ -167,14 +168,23 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!formData.title.trim()) {
       alert('Judul akun wajib diisi!');
       return;
     }
-    sounds.playSuccessSound();
-    onSave(formData);
+
+    try {
+      setIsSubmitting(true);
+      sounds.playClickSound();
+      await onSave(formData);
+    } catch (err) {
+      console.error('Failed to save account:', err);
+      setIsSubmitting(false);
+    }
   };
 
   const lockInfo = formatLocks(formData.priceIdr, settings.dlRateIdr);
@@ -198,10 +208,12 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
           </div>
           <button
             onClick={() => {
+              if (isSubmitting) return;
               sounds.playClickSound();
               onClose();
             }}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-slate-800 transition-colors"
+            disabled={isSubmitting}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <X className="w-5 h-5" />
           </button>
@@ -591,19 +603,33 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
             <button
               type="button"
+              disabled={isSubmitting}
               onClick={() => {
+                if (isSubmitting) return;
                 sounds.playClickSound();
                 onClose();
               }}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-300 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold text-xs shadow-pixel-amber"
+              disabled={isSubmitting}
+              className={`px-6 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                isSubmitting
+                  ? 'bg-amber-500/50 text-slate-900 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black shadow-pixel-amber'
+              }`}
             >
-              {isEdit ? 'SIMPAN PERUBAHAN AKUN' : 'PUBLIKASIKAN KE KATALOG'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                  <span>{isEdit ? 'Menyimpan Perubahan...' : 'Mempublikasikan ke Katalog...'}</span>
+                </>
+              ) : (
+                <span>{isEdit ? 'SIMPAN PERUBAHAN AKUN' : 'PUBLIKASIKAN KE KATALOG'}</span>
+              )}
             </button>
           </div>
 

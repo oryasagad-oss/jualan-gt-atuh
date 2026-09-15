@@ -34,6 +34,8 @@ import {
   Search, 
   CheckCircle2, 
   XCircle, 
+  AlertCircle,
+  X,
   Layers, 
   DollarSign, 
   Package, 
@@ -43,11 +45,29 @@ import {
   Cloud
 } from 'lucide-react';
 
+interface ToastNotification {
+  id: number;
+  type: 'success' | 'error' | 'info';
+  title: string;
+  message: string;
+}
+
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [settings, setSettings] = useState<StoreSettings>(getStoredSettings());
   const [isLoading, setIsLoading] = useState(true);
+
+  // Toast notification state
+  const [toast, setToast] = useState<ToastNotification | null>(null);
+
+  const showToast = (type: 'success' | 'error' | 'info', title: string, message: string) => {
+    const id = Date.now();
+    setToast({ id, type, title, message });
+    setTimeout(() => {
+      setToast((current) => (current?.id === id ? null : current));
+    }, 4500);
+  };
 
   // Modals state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -122,6 +142,7 @@ export default function AdminPage() {
       createdAt: new Date().toISOString().split('T')[0],
     };
     handleSaveAccounts([duplicated, ...accounts]);
+    showToast('success', 'Akun Berhasil Disalin', `Duplikat baru dibuat dengan kode #${newId}.`);
   };
 
   // Delete Account
@@ -130,13 +151,15 @@ export default function AdminPage() {
       sounds.playPunchSound();
       const updated = accounts.filter((a) => a.id !== accountId);
       handleSaveAccounts(updated);
+      showToast('info', 'Akun Dihapus', `Akun #${accountId} telah dihapus dari katalog.`);
     }
   };
 
   // Add / Edit Account Callback
   const handleSaveAccountForm = async (account: Account) => {
+    const isEdit = !!editingAccount;
     let updated: Account[];
-    if (editingAccount) {
+    if (isEdit) {
       updated = accounts.map((a) => (a.id === account.id ? account : a));
     } else {
       updated = [account, ...accounts];
@@ -144,8 +167,29 @@ export default function AdminPage() {
     const res = await handleSaveAccounts(updated);
     setIsFormOpen(false);
     setEditingAccount(null);
+
     if (!res.success) {
-      alert(`Peringatan: Gagal menyimpan ke cloud: ${res.error || 'Terjadi masalah jaringan'}`);
+      sounds.playPunchSound();
+      showToast(
+        'error',
+        'Gagal Menyimpan ke Cloud',
+        res.error || 'Terjadi gangguan koneksi saat sinkronisasi database.'
+      );
+    } else {
+      sounds.playSuccessSound();
+      if (isEdit) {
+        showToast(
+          'success',
+          'Perubahan Berhasil Disimpan',
+          `Data akun #${account.id} (${account.title}) berhasil diperbarui & disinkronkan ke cloud.`
+        );
+      } else {
+        showToast(
+          'success',
+          'Akun Berhasil Dipublikasikan',
+          `Akun #${account.id} (${account.title}) telah aktif di katalog & database cloud.`
+        );
+      }
     }
   };
 
@@ -638,6 +682,48 @@ export default function AdminPage() {
           onSave={handleSaveSettings}
           onClose={() => setIsSettingsOpen(false)}
         />
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <aside
+          role="status"
+          aria-live="polite"
+          className="fixed top-20 right-4 sm:right-8 z-50 max-w-md w-[calc(100vw-2rem)] sm:w-auto"
+        >
+          <div
+            className={`p-4 rounded-2xl border shadow-2xl flex items-start gap-3 backdrop-blur-md transition-all ${
+              toast.type === 'success'
+                ? 'bg-slate-950/95 border-emerald-500/50 text-emerald-100 shadow-emerald-950/30'
+                : toast.type === 'error'
+                ? 'bg-slate-950/95 border-rose-500/50 text-rose-100 shadow-rose-950/30'
+                : 'bg-slate-950/95 border-amber-500/50 text-amber-100 shadow-amber-950/30'
+            }`}
+          >
+            <div className="shrink-0 mt-0.5">
+              {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+              {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-400" />}
+              {toast.type === 'info' && <CheckCircle2 className="w-5 h-5 text-amber-400" />}
+            </div>
+
+            <div className="flex-1 min-w-0 pr-2">
+              <h4 className="text-xs sm:text-sm font-bold tracking-wide text-white">
+                {toast.title}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-gray-300 mt-1 leading-relaxed">
+                {toast.message}
+              </p>
+            </div>
+
+            <button
+              onClick={() => setToast(null)}
+              aria-label="Tutup notifikasi"
+              className="p-1 rounded-lg text-gray-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </aside>
       )}
 
     </div>
