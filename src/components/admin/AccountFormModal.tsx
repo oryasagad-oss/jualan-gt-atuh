@@ -8,6 +8,7 @@ import { X, Upload, Plus, Trash2, Image as ImageIcon, Sparkles, Check, Info } fr
 
 interface AccountFormModalProps {
   accountToEdit?: Account | null;
+  defaultCategory?: AccountCategory;
   settings: StoreSettings;
   onSave: (account: Account) => void;
   onClose: () => void;
@@ -15,22 +16,28 @@ interface AccountFormModalProps {
 
 export const AccountFormModal: React.FC<AccountFormModalProps> = ({
   accountToEdit,
+  defaultCategory,
   settings,
   onSave,
   onClose,
 }) => {
   const isEdit = !!accountToEdit;
+  const fallbackCategory: AccountCategory = defaultCategory || 'SUPP/SSUP';
 
-  const initialCategories: AccountCategory[] = accountToEdit?.categories && accountToEdit.categories.length > 0
+  const rawCats: string[] = accountToEdit?.categories && accountToEdit.categories.length > 0
     ? accountToEdit.categories
     : accountToEdit?.category
       ? [accountToEdit.category]
-      : ['Super Supporter'];
+      : [fallbackCategory];
+
+  const initialCategories: AccountCategory[] = rawCats.map((c) =>
+    c === 'Super Supporter' ? 'SUPP/SSUP' : (c as AccountCategory)
+  );
 
   const [formData, setFormData] = useState<Account>({
     id: accountToEdit?.id || `GT-${Math.floor(1000 + Math.random() * 9000)}`,
     title: accountToEdit?.title || '',
-    category: initialCategories[0] || 'Super Supporter',
+    category: initialCategories[0] || fallbackCategory,
     categories: initialCategories,
     loginType: accountToEdit?.loginType || 'Legacy',
     emailStatus: accountToEdit?.emailStatus || 'Clean Gmail',
@@ -341,40 +348,46 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
               Kategori Akun (Bisa Pilih Lebih Dari 1):
             </label>
             <p className="text-[11px] text-gray-400 mb-2.5">
-              Pilih satu atau gabungkan kategori (contoh: Role yang juga Super Supporter, atau Polosan yang Super Supporter).
+              Pilih satu atau gabungkan kategori (contoh: Akun Roles yang juga SUPP/SSUP, atau Polosan yang SUPP/SSUP).
             </p>
             <div className="flex flex-wrap gap-2">
-              {(['Plain / Polosan', 'Super Supporter', 'Roles'] as const).map((cat) => {
-                const currentCats = formData.categories || (formData.category ? [formData.category] : []);
-                const isSelected = currentCats.includes(cat);
+              {[
+                { key: 'Plain / Polosan' as const, label: 'Plain / Polosan', icon: '📦' },
+                { key: 'SUPP/SSUP' as const, label: 'SUPP/SSUP', icon: '👑' },
+                { key: 'Roles' as const, label: 'Roles', icon: '🎖️' },
+              ].map((cat) => {
+                const currentCats = (formData.categories || (formData.category ? [formData.category] : []))
+                  .map((c) => (c === 'Super Supporter' ? 'SUPP/SSUP' : c));
+                const isSelected = currentCats.includes(cat.key);
                 return (
                   <button
-                    key={cat}
+                    key={cat.key}
                     type="button"
                     onClick={() => {
                       sounds.playClickSound();
                       let updated: AccountCategory[];
                       if (isSelected) {
-                        updated = currentCats.filter((c) => c !== cat);
-                        if (updated.length === 0) updated = [cat]; // maintain at least 1
+                        updated = currentCats.filter((c) => c !== cat.key);
+                        if (updated.length === 0) updated = [cat.key]; // maintain at least 1
                       } else {
-                        updated = [...currentCats, cat];
+                        updated = [...currentCats, cat.key];
                       }
                       setFormData({
                         ...formData,
                         categories: updated,
                         category: updated[0] || 'Plain / Polosan',
-                        role: updated.includes('Super Supporter') ? 'Super Supporter' : 'None',
+                        role: updated.includes('SUPP/SSUP') ? 'Super Supporter' : 'None',
                       });
                     }}
                     className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
                       isSelected
-                        ? 'bg-amber-500 text-black border-amber-400 shadow-pixel-amber'
+                        ? 'bg-amber-500 text-black border-amber-400 shadow-pixel-amber scale-[1.02]'
                         : 'bg-slate-900 text-gray-400 border-slate-700 hover:text-white hover:border-slate-500'
                     }`}
                   >
-                    <span className="text-[12px]">{isSelected ? '✓' : '+'}</span>
-                    <span>{cat}</span>
+                    <span>{cat.icon}</span>
+                    <span>{cat.label}</span>
+                    <span className="text-[12px] font-mono ml-0.5">{isSelected ? '✓' : '+'}</span>
                   </button>
                 );
               })}

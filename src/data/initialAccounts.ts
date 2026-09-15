@@ -27,8 +27,8 @@ export const SAMPLE_ACCOUNTS: Account[] = [
   {
     id: "GT-9901",
     title: "Akun Sultan Old 2015 | Ringmaster (10/10 Rings) + Ances Lv 5 + DGS",
-    category: "Super Supporter",
-    categories: ["Super Supporter"],
+    category: "SUPP/SSUP",
+    categories: ["SUPP/SSUP"],
     loginType: "Legacy",
     emailStatus: "Clean Gmail",
     isAvailable: true,
@@ -167,8 +167,8 @@ export const SAMPLE_ACCOUNTS: Account[] = [
   {
     id: "GT-5503",
     title: "Akun Rare 2014 Lv 68 | 3 Letter Name + Legacy Full Info (SOLD)",
-    category: "Super Supporter",
-    categories: ["Super Supporter"],
+    category: "SUPP/SSUP",
+    categories: ["SUPP/SSUP"],
     loginType: "Legacy",
     emailStatus: "Clean Gmail",
     isAvailable: false,
@@ -194,13 +194,13 @@ export const SAMPLE_ACCOUNTS: Account[] = [
     description: "Akun vintage tahun 2014 (4.1k Days) dengan nama hanya 3 huruf. Telah terjual kepada buyer loyal via direct transfer.",
     createdAt: "2026-02-28",
     badgeFeatured: false,
-    notes: "STATUS: SOLD OUT. Menjadi portfolio transaksi sukses."
+    notes: "STATUS: SOLD OUT. Menjadi portfolio transaksi sukses.",
   },
   {
     id: "GT-4411",
     title: "Akun Old 2016 Lv 90 | Ringmaster + 4 Ances Level 4",
-    category: "Super Supporter",
-    categories: ["Super Supporter"],
+    category: "SUPP/SSUP",
+    categories: ["SUPP/SSUP"],
     loginType: "Legacy",
     emailStatus: "Clean Gmail",
     isAvailable: true,

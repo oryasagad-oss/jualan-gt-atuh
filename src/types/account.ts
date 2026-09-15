@@ -1,7 +1,7 @@
 export type LoginType = 'Legacy' | 'Gmail' | 'Ubisoft';
 export type EmailStatus = 'Clean Gmail' | 'Changeable' | 'Dummy Email';
-export type AccountCategory = 'Plain / Polosan' | 'Super Supporter' | 'Roles';
-export type RoleStatus = 'None' | 'Supporter' | 'Super Supporter';
+export type AccountCategory = 'Plain / Polosan' | 'SUPP/SSUP' | 'Roles' | 'Super Supporter';
+export type RoleStatus = 'None' | 'Supporter' | 'Super Supporter' | 'SUPP/SSUP';
 export type AdminStatus = 'ONLINE' | 'OFFLINE' | 'FAST_RESPONSE';
 
 export interface Account {

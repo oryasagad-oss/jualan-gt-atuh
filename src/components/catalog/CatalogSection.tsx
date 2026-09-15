@@ -16,24 +16,38 @@ interface CatalogSectionProps {
 
 type SortOption = 'latest' | 'price-asc' | 'price-desc' | 'level-desc';
 
+export function normalizeCategory(cat: string): AccountCategory {
+  if (cat === 'Super Supporter' || cat === 'SUPP/SSUP' || cat === 'Supporter' || cat === 'SSUP' || cat === 'SUPP') {
+    return 'SUPP/SSUP';
+  }
+  if (cat === 'Roles' || cat === 'Role') {
+    return 'Roles';
+  }
+  return 'Plain / Polosan';
+}
+
 export function getAccountCategories(acc: Account): AccountCategory[] {
+  let list: string[] = [];
+
   if (Array.isArray(acc.categories) && acc.categories.length > 0) {
-    return acc.categories;
+    list = acc.categories;
+  } else if (Array.isArray(acc.category)) {
+    list = acc.category;
+  } else if (typeof acc.category === 'string' && acc.category) {
+    list = [acc.category];
+  } else if (acc.role === 'Super Supporter' || acc.role === 'Supporter' || acc.role === 'SUPP/SSUP') {
+    list = ['SUPP/SSUP'];
+  } else {
+    const lower = (acc.title + ' ' + (acc.description || '')).toLowerCase();
+    if (lower.includes('role') || lower.includes('doctor') || lower.includes('chef') || lower.includes('farmer') || lower.includes('surg')) {
+      list = ['Roles'];
+    } else {
+      list = ['Plain / Polosan'];
+    }
   }
-  if (Array.isArray(acc.category)) {
-    return acc.category;
-  }
-  if (typeof acc.category === 'string' && acc.category) {
-    return [acc.category];
-  }
-  if (acc.role === 'Super Supporter') {
-    return ['Super Supporter'];
-  }
-  const lower = (acc.title + ' ' + acc.description).toLowerCase();
-  if (lower.includes('role') || lower.includes('doctor') || lower.includes('chef') || lower.includes('farmer')) {
-    return ['Roles'];
-  }
-  return ['Plain / Polosan'];
+
+  const normalized = list.map(normalizeCategory);
+  return Array.from(new Set(normalized));
 }
 
 export function getAccountCategory(acc: Account): AccountCategory {
@@ -168,12 +182,12 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ accounts, settin
 
       </div>
 
-      {/* Category Filter Tabs (3 Primary Categories: Plain / Polosan, Super Supporter, Roles) */}
+      {/* Category Filter Tabs (3 Primary Categories: Plain / Polosan, SUPP/SSUP, Roles) */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-8">
         {[
           { key: 'All', label: t.catalog.categoryAll, icon: '🌟' },
           { key: 'Plain / Polosan', label: t.catalog.categoryPlain, icon: '📦' },
-          { key: 'Super Supporter', label: t.catalog.categorySuperSupporter, icon: '👑' },
+          { key: 'SUPP/SSUP', label: t.catalog.categorySuperSupporter, icon: '👑' },
           { key: 'Roles', label: t.catalog.categoryRoles, icon: '🎖️' },
         ].map((cat) => {
           const count = cat.key === 'All'

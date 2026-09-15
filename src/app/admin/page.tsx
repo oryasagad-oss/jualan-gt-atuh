@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Account, StoreSettings, LoginType } from '../../types/account';
+import { Account, AccountCategory, StoreSettings, LoginType } from '../../types/account';
 import { 
   getStoredAccounts, 
   saveStoredAccounts, 
@@ -54,6 +54,7 @@ export default function AdminPage() {
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchTable, setSearchTable] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<'All' | AccountCategory>('All');
 
   // Load from local cache and sync with Supabase Cloud
   useEffect(() => {
@@ -195,16 +196,47 @@ export default function AdminPage() {
 
   // Filtered accounts for table
   const filteredAccounts = useMemo(() => {
-    if (!searchTable) return accounts;
-    const q = searchTable.toLowerCase();
-    return accounts.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.id.toLowerCase().includes(q) ||
-        a.loginType.toLowerCase().includes(q) ||
-        a.emailStatus.toLowerCase().includes(q)
-    );
-  }, [accounts, searchTable]);
+    return accounts.filter((a) => {
+      // Category filter
+      if (selectedCategory !== 'All' && !getAccountCategories(a).includes(selectedCategory)) {
+        return false;
+      }
+
+      // Search query
+      if (searchTable.trim()) {
+        const q = searchTable.toLowerCase().trim();
+        const matchTitle = a.title.toLowerCase().includes(q);
+        const matchId = a.id.toLowerCase().includes(q);
+        const matchLogin = a.loginType.toLowerCase().includes(q);
+        const matchEmail = a.emailStatus.toLowerCase().includes(q);
+        const matchCategory = getAccountCategories(a).some((c) => c.toLowerCase().includes(q));
+        if (!matchTitle && !matchId && !matchLogin && !matchEmail && !matchCategory) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [accounts, selectedCategory, searchTable]);
+
+  // Category counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      All: accounts.length,
+      'Plain / Polosan': 0,
+      'SUPP/SSUP': 0,
+      Roles: 0,
+    };
+    accounts.forEach((acc) => {
+      const cats = getAccountCategories(acc);
+      cats.forEach((c) => {
+        if (counts[c] !== undefined) {
+          counts[c]++;
+        }
+      });
+    });
+    return counts;
+  }, [accounts]);
 
   // Statistics
   const totalStock = accounts.length;
@@ -400,6 +432,47 @@ export default function AdminPage() {
 
         </div>
 
+        {/* Category Filters Bar */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {(
+            [
+              { key: 'All', label: 'Semua Kategori', icon: '🌐' },
+              { key: 'Plain / Polosan', label: 'Plain / Polosan', icon: '📦' },
+              { key: 'SUPP/SSUP', label: 'SUPP/SSUP', icon: '👑' },
+              { key: 'Roles', label: 'Roles', icon: '🎖️' },
+            ] as const
+          ).map((tab) => {
+            const isActive = selectedCategory === tab.key;
+            const count = categoryCounts[tab.key] ?? 0;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  sounds.playClickSound();
+                  setSelectedCategory(tab.key);
+                }}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  isActive
+                    ? 'bg-amber-500 text-slate-950 shadow-pixel-amber font-bold'
+                    : 'bg-gt-card border border-slate-800 text-gray-300 hover:text-white hover:border-slate-700'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                    isActive
+                      ? 'bg-slate-950/20 text-slate-950 font-bold'
+                      : 'bg-slate-800 text-gray-400'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Accounts Management Table */}
         <div className="bg-gt-card border border-slate-800 rounded-2xl overflow-hidden shadow-pixel">
           <div className="overflow-x-auto">
@@ -548,6 +621,7 @@ export default function AdminPage() {
       {isFormOpen && (
         <AccountFormModal
           accountToEdit={editingAccount}
+          defaultCategory={selectedCategory !== 'All' ? selectedCategory : undefined}
           settings={settings}
           onSave={handleSaveAccountForm}
           onClose={() => {
