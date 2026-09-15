@@ -88,7 +88,7 @@ export default function AdminPage() {
   // Sync back to cloud storage on change
   const handleSaveAccounts = async (newAccounts: Account[]) => {
     setAccounts(newAccounts);
-    await saveStoredAccounts(newAccounts);
+    return await saveStoredAccounts(newAccounts);
   };
 
   const handleSaveSettings = async (newSettings: StoreSettings) => {
@@ -133,15 +133,19 @@ export default function AdminPage() {
   };
 
   // Add / Edit Account Callback
-  const handleSaveAccountForm = (account: Account) => {
+  const handleSaveAccountForm = async (account: Account) => {
+    let updated: Account[];
     if (editingAccount) {
-      const updated = accounts.map((a) => (a.id === account.id ? account : a));
-      handleSaveAccounts(updated);
+      updated = accounts.map((a) => (a.id === account.id ? account : a));
     } else {
-      handleSaveAccounts([account, ...accounts]);
+      updated = [account, ...accounts];
     }
+    const res = await handleSaveAccounts(updated);
     setIsFormOpen(false);
     setEditingAccount(null);
+    if (!res.success) {
+      alert(`Peringatan: Gagal menyimpan ke cloud: ${res.error || 'Terjadi masalah jaringan'}`);
+    }
   };
 
   // Export JSON Backup

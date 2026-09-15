@@ -56,24 +56,57 @@ export const AccountFormModal: React.FC<AccountFormModalProps> = ({
   const [questInput, setQuestInput] = useState('');
   const [highlightInput, setHighlightInput] = useState('');
 
-  // Handle local image file upload (convert to Base64)
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    Array.from(files).forEach((file) => {
+  // Helper to compress local images to lightweight JPEG via Canvas (prevents quota issues)
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setFormData((prev) => ({
-            ...prev,
-            images: [...prev.images, reader.result as string],
-          }));
-        }
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target?.result as string);
+        img.src = e.target?.result as string;
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  // Handle local image file upload (with automatic compression)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
     sounds.playCoinSound();
+    const compressedList = await Promise.all(Array.from(files).map((file) => compressImage(file)));
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...compressedList],
+    }));
+    e.target.value = '';
   };
 
   const handleAddImageUrl = () => {

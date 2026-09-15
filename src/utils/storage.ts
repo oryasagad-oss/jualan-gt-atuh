@@ -85,13 +85,19 @@ export async function fetchAccounts(): Promise<Account[]> {
   }
 }
 
-export async function saveStoredAccounts(accounts: Account[]): Promise<void> {
+export async function saveStoredAccounts(accounts: Account[]): Promise<{ success: boolean; error?: string }> {
   // 1. Save to local cache immediately
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
     } catch (err) {
       console.error('Failed to cache accounts locally:', err);
+      // Try to clear legacy cache to free up space
+      try {
+        localStorage.removeItem('gt_store_accounts_v1');
+        localStorage.removeItem('gt_store_settings_v1');
+        localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
+      } catch {}
     }
   }
 
@@ -107,9 +113,12 @@ export async function saveStoredAccounts(accounts: Account[]): Promise<void> {
 
     if (error) {
       console.error('Failed to save accounts to Supabase:', error.message);
+      return { success: false, error: error.message };
     }
-  } catch (err) {
+    return { success: true };
+  } catch (err: any) {
     console.error('Network error saving accounts to Supabase:', err);
+    return { success: false, error: err?.message || 'Network error' };
   }
 }
 
